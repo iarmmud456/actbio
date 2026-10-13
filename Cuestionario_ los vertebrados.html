@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cuestionario: los vertebrados</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{--bg:#f4f7f2;--card:#fff;--tx:#14201a;--mu:#5b6b60;--ac:#2e8b3d;--or:#e07a1f;--bd:#d5ddd3;--ok:#2e8b3d;--ko:#c0392b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1713;--card:#18231d;--tx:#eef3ee;--mu:#9bb0a2;--ac:#5fbf6e;--or:#f0954a;--bd:#2c3b32;--ok:#5fbf6e;--ko:#ef6b5c}}
+:root[data-theme="dark"]{--bg:#0f1713;--card:#18231d;--tx:#eef3ee;--mu:#9bb0a2;--ac:#5fbf6e;--or:#f0954a;--bd:#2c3b32;--ok:#5fbf6e;--ko:#ef6b5c}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:640px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:1.6rem;margin:.2em 0}h2{font-size:1.25rem;margin:.3em 0 .8em}
+.tag{color:var(--or);font-weight:700;letter-spacing:.08em;font-size:.8rem;text-transform:uppercase}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:18px;margin:14px 0}
+.bar{height:8px;background:var(--bd);border-radius:6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ac)}
+button,input,textarea{font:inherit;color:inherit}
+input,textarea{width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);margin:6px 0}
+textarea{min-height:80px;font-family:ui-monospace,monospace;font-size:.8rem}
+.opt{display:flex;gap:10px;width:100%;text-align:left;padding:12px 14px;margin:8px 0;border:1.5px solid var(--bd);border-radius:12px;background:var(--card);cursor:pointer}
+.opt b{color:var(--ac);min-width:1.2em}.opt.sel{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 14%,var(--card))}
+.btn{padding:11px 18px;border:0;border-radius:10px;background:var(--ac);color:#fff;font-weight:700;cursor:pointer}
+.btn.sec{background:transparent;color:var(--tx);border:1.5px solid var(--bd)}.btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.mu{color:var(--mu);font-size:.9rem}
+.radio{display:block;padding:12px;border:1.5px solid var(--bd);border-radius:12px;margin:8px 0;cursor:pointer}
+.radio input{width:auto;margin-right:8px}.big{font-size:2.6rem;font-weight:800;color:var(--ac);line-height:1}
+.err{color:var(--ko);font-size:.9rem;min-height:1.2em}
+</style></head><body><main id="app"></main>
+<script>
+const Q=[
+["¿Qué característica distingue a los vertebrados?",["Tienen columna vertebral","Respiran solo por pulmones","Poseen seis patas","Carecen de esqueleto"]],
+["¿Qué adaptación ayuda a las aves a volar?",["Huesos ligeros y huecos","Piel húmeda y desnuda","Aletas con radios","Temperatura corporal variable"]],
+["¿Con qué órgano respiran la mayoría de los peces?",["Branquias","Pulmones","Tráqueas","Piel seca"]],
+["¿Qué significa que un animal sea ovíparo?",["Nace de un huevo","Se alimenta de leche","Vive siempre en el agua","Respira por la piel"]],
+["¿Qué recubre el cuerpo de las aves?",["Plumas","Escamas húmedas","Pelo","Piel desnuda"]],
+["¿Qué rasgo define a los mamíferos?",["Las crías maman leche","Todos ponen huevos","Tienen branquias","Su cuerpo tiene plumas"]],
+["¿A qué grupo pertenece la cecilia?",["Anfibios","Reptiles","Peces","Mamíferos"]],
+["¿Cómo es la piel de los anfibios?",["Fina, húmeda y sin escamas","Seca y con plumas","Cubierta de pelo","Dura y calcárea"]],
+["¿Por qué los pingüinos siguen siendo aves?",["Tienen plumas y ponen huevos","Respiran por branquias","Son de sangre fría","Tienen pelo"]],
+["¿Qué tipo de alimentación tiene el lince ibérico?",["Carnívora","Herbívora","Filtradora","Omnívora principalmente"]]
+]; // la opción correcta es siempre la de índice 0 (se mezclan al empezar)
+const L="ABCD",KEY="revelar";
+let S=null,view="start",msg="";
+const $=s=>document.querySelector(s),app=$("#app");
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function enc(o){return btoa(unescape(encodeURIComponent(JSON.stringify(o))))}
+function dec(t){return JSON.parse(decodeURIComponent(escape(atob(t.trim().replace(/\s+/g,"")))))}
+function score(){return S.a.filter(x=>x===0).length}
+function nota(){return (score()/Q.length*10).toFixed(1).replace(".",",")}
+function persist(){try{sessionStorage.setItem("vq",JSON.stringify(S))}catch(e){}}
+function render(){
+ if(view==="start")return start();
+ if(view==="quiz")return quiz();
+ if(view==="end")return end();
+}
+function start(){
+ app.innerHTML=`<div class="tag">Biología · 3.º ESO</div><h1>Cuestionario: los vertebrados</h1>
+ <p class="mu">10 preguntas tipo test. Puedes guardar tu progreso como código de texto y continuar más tarde.</p>
+ <div class="card"><label>Nombre y apellidos<input id="nm" autocomplete="name"></label>
+ <label>Curso / grupo<input id="gr" placeholder="3.º ESO ACT"></label>
+ <div class="err" id="e"></div><div class="row"><button class="btn" id="go">Empezar</button></div></div>
+ <div class="card"><b>¿Tienes un código de progreso?</b><textarea id="cd" placeholder="Pega aquí tu código"></textarea>
+ <div class="err" id="e2">${esc(msg)}</div><div class="row"><button class="btn sec" id="rs">Continuar</button></div></div>`;
+ $("#go").onclick=()=>{const n=$("#nm").value.trim();if(!n){$("#e").textContent="Escribe tu nombre.";return}
+  S={n,g:$("#gr").value.trim(),o:Q.map(()=>shuffle([0,1,2,3])),a:Q.map(()=>-1),i:0};persist();view="quiz";render()};
+ $("#rs").onclick=()=>{try{const d=dec($("#cd").value);if(!d||!Array.isArray(d.o)||d.o.length!==Q.length||!Array.isArray(d.a))throw 0;S=d;msg="";persist();view=S.a.every(x=>x>=0)?"end":"quiz";render()}catch(e){$("#e2").textContent="El código no es válido. Cópialo completo."}}
+}
+function quiz(){
+ const i=S.i,q=Q[i],ord=S.o[i],cur=S.a[i],last=i===Q.length-1,done=S.a.filter(x=>x>=0).length;
+ app.innerHTML=`<div class="tag">Pregunta ${i+1} de ${Q.length}</div>
+ <div class="bar"><i style="width:${done/Q.length*100}%"></i></div>
+ <div class="card"><h2>${esc(q[0])}</h2>${ord.map((k,p)=>`<button class="opt ${cur===k?"sel":""}" data-k="${k}"><b>${L[p]}</b><span>${esc(q[1][k])}</span></button>`).join("")}</div>
+ <div class="row"><button class="btn sec" id="pv" ${i===0?"disabled":""}>Anterior</button>
+ <button class="btn" id="nx" ${cur<0?"disabled":""}>${last?"Terminar":"Siguiente"}</button>
+ <button class="btn sec" id="sv">Guardar progreso</button></div>
+ <div id="sc"></div>`;
+ document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{S.a[i]=+b.dataset.k;persist();quiz()});
+ $("#pv").onclick=()=>{S.i--;persist();quiz()};
+ $("#nx").onclick=()=>{if(last){if(S.a.some(x=>x<0)){const f=S.a.findIndex(x=>x<0);S.i=f;quiz();return}view="end";render()}else{S.i++;persist();quiz()}};
+ $("#sv").onclick=()=>{$("#sc").innerHTML=`<div class="card"><b>Tu código de progreso</b><p class="mu">Cópialo y guárdalo. Para continuar, pégalo en la pantalla de inicio.</p><textarea id="cc" readonly>${enc(S)}</textarea><div class="row"><button class="btn sec" id="cp">Copiar código</button></div></div>`;
+  $("#cp").onclick=async()=>{const t=$("#cc");t.select();try{await navigator.clipboard.writeText(t.value)}catch(e){document.execCommand("copy")}$("#cp").textContent="Copiado"}}
+}
+function end(){
+ app.innerHTML=`<div class="tag">Cuestionario terminado</div><h1>${esc(S.n)}</h1>
+ <div class="card"><div class="big">${nota()}<span class="mu" style="font-size:1rem"> / 10</span></div><p class="mu">${score()} de ${Q.length} respuestas correctas.</p></div>
+ <div class="card"><b>Elige el tipo de informe (PDF)</b>
+ <label class="radio"><input type="radio" name="t" value="n" checked>Informe con resultados, sin soluciones</label>
+ <label class="radio"><input type="radio" name="t" value="s">Informe con soluciones (requiere el código «revelar»)</label>
+ <div id="kx" hidden><input id="kc" placeholder="Código «revelar»" autocomplete="off"></div>
+ <div class="err" id="e"></div><div class="row"><button class="btn" id="pdf">Generar informe PDF</button><button class="btn sec" id="rv">Revisar respuestas</button></div></div>`;
+ document.querySelectorAll("[name=t]").forEach(r=>r.onchange=()=>{$("#kx").hidden=document.querySelector("[name=t]:checked").value!=="s"});
+ $("#rv").onclick=()=>{view="quiz";S.i=0;quiz()};
+ $("#pdf").onclick=async()=>{const t=document.querySelector("[name=t]:checked").value;
+  if(t==="s"&&$("#kc").value.trim().toLowerCase()!==KEY){$("#e").textContent="Código incorrecto.";return}
+  $("#e").textContent="";await makePdf(t==="s")}
+}
+async function makePdf(sol){
+ const {jsPDF}=window.jspdf||{};
+ if(!jsPDF){$("#e").textContent="No se pudo cargar el generador de PDF. Revisa tu conexión.";return}
+ const d=new jsPDF({unit:"mm",format:"a4"}),W=180;let y=20;
+ const need=h=>{if(y+h>280){d.addPage();y=20}};
+ d.setFont("helvetica","bold");d.setFontSize(18);d.text("Informe: los vertebrados",15,y);y+=9;
+ d.setFontSize(11);d.setFont("helvetica","normal");
+ d.text("Alumno/a: "+S.n+(S.g?"   Curso: "+S.g:""),15,y);y+=6;
+ d.text("Fecha: "+new Date().toLocaleDateString("es-ES"),15,y);y+=6;
+ d.setFont("helvetica","bold");d.text("Nota: "+nota()+" / 10   ("+score()+" de "+Q.length+" correctas)",15,y);y+=10;
+ Q.forEach((q,i)=>{const ok=S.a[i]===0,ch=S.a[i]>=0?q[1][S.a[i]]:"(sin responder)";
+  const t=d.splitTextToSize((i+1)+". "+q[0],W);need(t.length*5+14);
+  d.setFont("helvetica","bold");d.setFontSize(11);d.text(t,15,y);y+=t.length*5;
+  d.setFont("helvetica","normal");d.text("Tu respuesta: "+ch+"  ->  "+(ok?"Correcta":"Incorrecta"),20,y);y+=5;
+  if(sol){d.text("Solución: "+q[1][0],20,y);y+=5}y+=3});
+ const name="informe-vertebrados-"+S.n.replace(/\s+/g,"_").toLowerCase()+(sol?"-con-soluciones":"")+".pdf";
+ try{const dl=window.claude&&await window.claude.use("downloads");
+  if(dl){await dl.save({filename:name,data:d.output("blob")});return}}catch(e){}
+ try{d.save(name)}catch(e){$("#e").textContent="No se pudo guardar el PDF."}
+}
+(function(){try{const s=sessionStorage.getItem("vq");if(s){const d=JSON.parse(s);if(d&&d.o&&d.o.length===Q.length){S=d;view=S.a.every(x=>x>=0)?"end":"quiz"}}}catch(e){}render()})();
+</script></body></html>
