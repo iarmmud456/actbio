@@ -86,8 +86,8 @@ function end(){
  <div class="card"><div class="big">${nota()}<span class="mu" style="font-size:1rem"> / 10</span></div><p class="mu">${score()} de ${Q.length} respuestas correctas.</p></div>
  <div class="card"><b>Elige el tipo de informe (PDF)</b>
  <label class="radio"><input type="radio" name="t" value="n" checked>Informe con resultados, sin soluciones</label>
- <label class="radio"><input type="radio" name="t" value="s">Informe con soluciones (requiere el código «revelar»)</label>
- <div id="kx" hidden><input id="kc" placeholder="Código «revelar»" autocomplete="off"></div>
+ <label class="radio"><input type="radio" name="t" value="s">Informe con soluciones (requiere introducir el código)</label>
+ <div id="kx" hidden><input id="kc" placeholder="Introduce el código" autocomplete="off"></div>
  <div class="err" id="e"></div><div class="row"><button class="btn" id="pdf">Generar informe PDF</button><button class="btn sec" id="rv">Revisar respuestas</button></div></div>`;
  document.querySelectorAll("[name=t]").forEach(r=>r.onchange=()=>{$("#kx").hidden=document.querySelector("[name=t]:checked").value!=="s"});
  $("#rv").onclick=()=>{view="quiz";S.i=0;quiz()};
