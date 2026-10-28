@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-50">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cuestionario Interactivo: El Medio Natural (40 Preguntas)</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- html2pdf.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            eco: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              200: '#bbf7d0',
+              300: '#86efac',
+              400: '#4ade80',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              800: '#166534',
+              900: '#14532d',
+              950: '#052e16',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Estilos de Impresión y PDF */
+    @media print {
+      .no-print { display: none !important; }
+      .print-only { display: block !important; }
+      body { background: white !important; color: black !important; font-size: 11pt; }
+      .pdf-page-break { page-break-inside: avoid; }
+    }
+
+    /* Borde decorativo temático para el Informe PDF */
+    .pdf-report-frame {
+      border: 3px solid #15803d;
+      border-radius: 16px;
+      position: relative;
+    }
+    .pdf-report-frame::before {
+      content: '';
+      position: absolute;
+      top: 4px; left: 4px; right: 4px; bottom: 4px;
+      border: 1px dashed #86efac;
+      border-radius: 12px;
+      pointer-events: none;
+    }
+
+    /* Animaciones suaves */
+    .fade-in {
+      animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Scrollbar personalizada */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #16a34a; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #15803d; }
+  </style>
+</head>
+<body class="font-sans antialiased text-slate-800 bg-slate-50 min-h-full flex flex-col justify-between selection:bg-eco-200">
+
+  <!-- CABECERA PRINCIPAL -->
+  <header class="bg-gradient-to-r from-eco-950 via-eco-900 to-eco-800 text-white shadow-lg no-print">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="p-2.5 bg-eco-700/50 rounded-2xl border border-eco-500/40 shadow-inner">
+          <svg class="w-8 h-8 text-eco-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 002 2h1.5a2.5 2.5 0 002.5-2.5V7a2 2 0 00-2-2h-1.5a1.5 1.5 0 01-1.5-1.5V3.935M12 2a10 10 0 100 20 10 10 0 000-20z"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-xl md:text-2xl font-black tracking-tight text-white">EL MEDIO NATURAL</h1>
+          <p class="text-xs md:text-sm text-eco-200 font-medium">Ecosistemas, Factores Abióticos/Bióticos, Flujos y Protección en Andalucía</p>
+        </div>
+      </div>
+      
+      <div class="hidden sm:flex items-center space-x-3">
+        <span class="px-3 py-1.5 rounded-xl bg-eco-800/80 border border-eco-600/50 text-xs font-semibold text-eco-200 flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-eco-400 animate-pulse"></span>
+          40 Preguntas Interactivas
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENEDOR PRINCIPAL -->
+  <main class="max-w-7xl mx-auto px-4 py-6 md:py-8 flex-grow w-full">
+
+    <!-- ========================================== -->
+    <!-- 1. PANTALLA DE REGISTRO DEL ESTUDIANTE     -->
+    <!-- ========================================== -->
+    <section id="screen-login" class="fade-in max-w-2xl mx-auto my-4">
+      <div class="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
+        <div class="bg-gradient-to-r from-eco-900 to-eco-800 p-6 md:p-8 text-white text-center">
+          <div class="inline-flex p-3 bg-white/10 rounded-2xl mb-3 backdrop-blur-md">
+            <svg class="w-10 h-10 text-eco-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C20.832 18.477 19.247 18 17.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+            </svg>
+          </div>
+          <h2 class="text-2xl md:text-3xl font-black">Registro de Identificación</h2>
+          <p class="text-eco-100 text-sm mt-1">Completa tus datos para personalizar el cuestionario y tu informe final en PDF</p>
+        </div>
+
+        <form id="form-login" onsubmit="event.preventDefault(); startQuiz();" class="p-6 md:p-8 space-y-5">
+          
+          <div id="login-error-box" class="hidden p-4 bg-rose-50 border-l-4 border-rose-500 rounded-r-xl text-rose-800 text-sm flex items-center space-x-2">
+            <svg class="w-5 h-5 text-rose-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>Por favor, rellena todos los campos requeridos antes de continuar.</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="student-name" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Nombre <span class="text-rose-500">*</span></label>
+              <input type="text" id="student-name" required placeholder="Ej. Juan" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-eco-500 focus:border-eco-500 outline-none transition text-slate-800 font-medium">
+            </div>
+
+            <div>
+              <label for="student-surname" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Apellidos <span class="text-rose-500">*</span></label>
+              <input type="text" id="student-surname" required placeholder="Ej. Pérez García" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-eco-500 focus:border-eco-500 outline-none transition text-slate-800 font-medium">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="student-course" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Curso / Grupo <span class="text-rose-500">*</span></label>
+              <input type="text" id="student-course" required placeholder="Ej. 1º ESO - Grupo A" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-eco-500 focus:border-eco-500 outline-none transition text-slate-800 font-medium">
+            </div>
+
+            <div>
+              <label for="student-school" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Centro Educativo <span class="text-rose-500">*</span></label>
+              <input type="text" id="student-school" required placeholder="Ej. IES Guadalquivir" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-eco-500 focus:border-eco-500 outline-none transition text-slate-800 font-medium">
+            </div>
+          </div>
+
+          <div class="p-4 bg-eco-50 rounded-2xl border border-eco-200 text-xs text-eco-900 space-y-1.5">
+            <span class="font-bold flex items-center gap-1.5 text-eco-800 text-sm">
+              <svg class="w-4 h-4 text-eco-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              Características del Test:
+            </span>
+            <ul class="list-disc list-inside space-y-1 text-slate-600 pl-1">
+              <li><strong>40 Preguntas exhaustivas</strong> con explicaciones pedagógicas completas.</li>
+              <li><strong>Aleatorización de Respuestas:</strong> Las 4 opciones se reordenan mediante Fisher-Yates en cada inicio o reinicio.</li>
+              <li><strong>Informe PDF Descargable</strong> y preparado para adjuntar en Google Classroom.</li>
+            </ul>
+          </div>
+
+          <button type="submit" class="w-full py-4 bg-eco-700 hover:bg-eco-800 active:bg-eco-900 text-white font-extrabold rounded-2xl shadow-lg hover:shadow-xl transition duration-200 flex items-center justify-center space-x-2 text-lg">
+            <span>Comenzar Cuestionario</span>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- 2. PANTALLA PRINCIPAL DEL CUESTIONARIO     -->
+    <!-- ========================================== -->
+    <section id="screen-quiz" class="hidden fade-in space-y-6">
+      
+      <!-- Barra Superior Fija de Control (Persistente) -->
+      <div class="sticky top-2 z-30 bg-white/95 backdrop-blur-md shadow-md rounded-2xl p-4 border border-slate-200 transition-all">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+          
+          <div class="flex items-center space-x-2 text-slate-700 font-semibold text-xs sm:text-sm">
+            <span class="bg-eco-100 text-eco-800 px-3 py-1 rounded-full border border-eco-200 flex items-center gap-1.5 font-bold">
+              <svg class="w-4 h-4 text-eco-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+              <span id="quiz-header-student">Alumno</span>
+            </span>
+            <span class="text-slate-300">•</span>
+            <span id="quiz-header-course" class="text-slate-600">Curso</span>
+            <span class="text-slate-300 hidden md:inline">•</span>
+            <span id="quiz-header-school" class="text-slate-500 font-normal hidden md:inline">Centro</span>
+          </div>
+
+          <div class="flex items-center space-x-3 text-xs font-bold">
+            <div class="bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200 text-slate-700 flex items-center space-x-1.5">
+              <svg class="w-4 h-4 text-eco-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              <span>Tiempo: <span id="quiz-timer" class="font-mono text-eco-800 text-sm">00:00</span></span>
+            </div>
+
+            <div class="bg-eco-50 px-3 py-1.5 rounded-xl border border-eco-200 text-eco-800">
+              <span id="quiz-progress-text">0/40 (0%)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Barra de Progreso Visual -->
+        <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden border border-slate-200">
+          <div id="quiz-progress-bar" class="bg-gradient-to-r from-eco-500 to-eco-700 h-full w-0 transition-all duration-300 rounded-full"></div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        
+        <!-- Panel Izquierdo: Píldoras de Navegación Rápida (1-40) -->
+        <div class="lg:col-span-1 bg-white p-4 md:p-5 rounded-3xl shadow-sm border border-slate-200 h-fit">
+          <div class="flex items-center justify-between mb-3 border-b border-slate-100 pb-2">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">Navegador (1-40)</h3>
+            <span class="text-xs font-extrabold text-eco-700" id="quiz-answered-count">0/40</span>
+          </div>
+
+          <div id="quiz-nav-grid" class="grid grid-cols-5 sm:grid-cols-8 lg:grid-cols-5 gap-1.5">
+            <!-- Píldoras generadas dinámicamente -->
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-slate-100 flex flex-wrap gap-2 text-[10px] font-medium text-slate-500">
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-eco-600"></span> Respondida</span>
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-slate-100 border border-slate-300"></span> Pendiente</span>
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded ring-2 ring-eco-500 bg-white"></span> Actual</span>
+          </div>
+        </div>
+
+        <!-- Panel Derecho: Tarjeta de Pregunta Activa -->
+        <div class="lg:col-span-3 bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-slate-200 flex flex-col justify-between min-h-[460px]">
+          <div>
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+              <span id="question-category-badge" class="px-3 py-1 bg-eco-100 text-eco-800 rounded-full text-xs font-bold uppercase tracking-wide border border-eco-200">
+                Categoría
+              </span>
+              <span id="question-number-badge" class="text-xs font-bold text-slate-400">
+                Pregunta 1 de 40
+              </span>
+            </div>
+
+            <!-- Ilustración SVG incorporada (si la pregunta contiene una) -->
+            <div id="question-svg-container" class="hidden my-4 p-4 bg-slate-50 rounded-2xl border border-slate-200 flex justify-center items-center">
+              <!-- SVG dinámico -->
+            </div>
+
+            <h2 id="question-text" class="text-lg md:text-xl font-bold text-slate-900 leading-snug mb-6">
+              Cargando pregunta...
+            </h2>
+
+            <!-- Opciones de Respuesta -->
+            <div id="options-container" class="space-y-3">
+              <!-- Opciones dinámicas -->
+            </div>
+          </div>
+
+          <!-- Botones de Navegación -->
+          <div class="pt-6 mt-8 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+            <button id="btn-prev" onclick="navigateQuestion(-1)" class="px-5 py-2.5 rounded-xl border border-slate-300 hover:bg-slate-50 font-bold text-slate-700 text-sm transition disabled:opacity-40 disabled:cursor-not-allowed">
+              ← Anterior
+            </button>
+
+            <button id="btn-next" onclick="navigateQuestion(1)" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-sm transition">
+              Siguiente →
+            </button>
+
+            <button id="btn-finish" onclick="promptFinishQuiz()" class="px-6 py-2.5 rounded-xl bg-eco-700 hover:bg-eco-800 text-white font-black text-sm shadow-md shadow-eco-700/20 transition">
+              Finalizar y Ver Resultados
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- 3. PANTALLA DE RESULTADOS E INFORME PDF    -->
+    <!-- ========================================== -->
+    <section id="screen-results" class="hidden fade-in space-y-8">
+      
+      <!-- Barra Superior de Acciones Directas -->
+      <div class="no-print bg-white p-5 rounded-3xl shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h2 class="text-xl font-black text-slate-900">Evaluación Completada</h2>
+          <p class="text-xs text-slate-500">Revisa tu desglose, descarga tu informe en PDF o entregalo en Google Classroom.</p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <button onclick="downloadPDFReport()" class="bg-eco-700 hover:bg-eco-800 text-white font-extrabold px-5 py-3 rounded-2xl shadow-lg transition flex items-center space-x-2 text-sm">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            <span>Descargar Informe PDF</span>
+          </button>
+
+          <button onclick="openClassroomModal()" class="bg-amber-600 hover:bg-amber-700 text-white font-extrabold px-5 py-3 rounded-2xl shadow-lg transition flex items-center space-x-2 text-sm">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+            <span>Entrega Google Classroom</span>
+          </button>
+
+          <button onclick="restartQuiz()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold px-4 py-3 rounded-2xl transition flex items-center space-x-1.5 text-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+            <span>Reiniciar</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- INFORME COMPLETO DE RESULTADOS (DISEÑADO PARA PANTALLA E IMPRESIÓN/PDF) -->
+      <div id="reporte-pdf-container" class="bg-white p-6 md:p-10 rounded-3xl shadow-sm pdf-report-frame space-y-8">
+        
+        <!-- Encabezado del Informe PDF con Borde y Sello -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b-2 border-eco-200 pb-6 gap-4">
+          <div class="space-y-1">
+            <div class="inline-flex items-center space-x-2 text-xs font-black text-eco-800 uppercase tracking-widest bg-eco-100 px-3 py-1 rounded-md">
+              <span>Informe Oficial de Evaluación</span>
+            </div>
+            <h1 class="text-2xl md:text-3xl font-black text-slate-900">EL MEDIO NATURAL</h1>
+            <p class="text-xs text-slate-500 font-medium">Comprobante Digital de Calificación y Desglose Didáctico</p>
+          </div>
+
+          <!-- Sello Digital SVG de Validación -->
+          <div class="flex items-center space-x-3 bg-eco-50 p-3 rounded-2xl border border-eco-200">
+            <svg class="w-12 h-12 text-eco-700 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+            </svg>
+            <div class="text-[11px] text-eco-900 leading-tight">
+              <span class="font-extrabold block uppercase">Validación Digital</span>
+              <span id="res-date">--/--/----</span><br>
+              <span id="res-time-elapsed">Tiempo: 00:00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ficha del Alumno + Tarjeta de Calificación -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+          
+          <div class="md:col-span-2 bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-3">
+            <h3 class="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Identificación del Estudiante</h3>
+            <div class="grid grid-cols-2 gap-3 text-xs md:text-sm">
+              <div>
+                <span class="text-slate-400 block text-[11px]">Alumno/a:</span>
+                <span id="res-student-fullname" class="font-bold text-slate-800">--</span>
+              </div>
+              <div>
+                <span class="text-slate-400 block text-[11px]">Curso / Grupo:</span>
+                <span id="res-student-course" class="font-bold text-slate-800">--</span>
+              </div>
+              <div class="col-span-2">
+                <span class="text-slate-400 block text-[11px]">Centro Educativo:</span>
+                <span id="res-student-school" class="font-bold text-slate-800">--</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-gradient-to-br from-eco-900 to-eco-800 text-white p-6 rounded-2xl text-center shadow-lg">
+            <span class="text-xs font-bold uppercase tracking-widest text-eco-200">Calificación Final</span>
+            <div id="res-score-number" class="text-4xl md:text-5xl font-black my-1">0 / 40</div>
+            <div id="res-score-percentage" class="text-sm font-semibold text-eco-200">0% de aciertos</div>
+            <div id="res-badge" class="mt-3 inline-block px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider bg-white/20 text-white backdrop-blur">
+              -
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Filtros de Revisión Interactivas (Ocultos en impresión PDF) -->
+        <div class="no-print pt-4 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
+          <h3 class="font-extrabold text-slate-800 text-base">Desglose Didáctico de Preguntas</h3>
+          <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs font-bold space-x-1">
+            <button onclick="filterReview('all')" id="filter-btn-all" class="px-3 py-1.5 rounded-lg bg-eco-700 text-white shadow-sm">Todas (40)</button>
+            <button onclick="filterReview('correct')" id="filter-btn-correct" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900">Correctas</button>
+            <button onclick="filterReview('incorrect')" id="filter-btn-incorrect" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900">Incorrectas / Blanco</button>
+          </div>
+        </div>
+
+        <!-- Lista de Preguntas Revisadas -->
+        <div id="review-list-container" class="space-y-4 pt-2">
+          <!-- Preguntas desglosadas -->
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL 1: PREGUNTAS PENDIENTES (SIN USAR alert/confirm) -->
+  <div id="modal-unanswered" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden fade-in no-print">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4">
+      <div class="flex items-center space-x-3 text-amber-600">
+        <div class="p-3 bg-amber-100 rounded-2xl">
+          <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+        </div>
+        <div>
+          <h3 class="text-lg font-bold text-slate-900">Preguntas sin responder</h3>
+          <p class="text-xs text-slate-500">Atención antes de finalizar</p>
+        </div>
+      </div>
+
+      <p class="text-sm text-slate-700">
+        Tienes <strong id="modal-unanswered-count" class="text-amber-700">X</strong> preguntas pendientes por responder.
+      </p>
+
+      <div id="modal-unanswered-list" class="p-3 bg-slate-100 rounded-xl text-xs font-mono text-slate-700 max-h-24 overflow-y-auto">
+        <!-- Lista de números pendientes -->
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-2 pt-2">
+        <button onclick="closeUnansweredModal(); jumpToFirstUnanswered();" class="w-full bg-eco-700 hover:bg-eco-800 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition">
+          Continuar Respondiendo
+        </button>
+        <button onclick="closeUnansweredModal(); processQuizSubmit();" class="w-full bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-2.5 px-4 rounded-xl text-xs transition">
+          Entregar De Todos Modos
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: INSTRUCCIONES GOOGLE CLASSROOM -->
+  <div id="modal-classroom" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden fade-in no-print">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center space-x-2 text-amber-600 font-bold">
+          <svg class="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+          <h3 class="text-lg font-black text-slate-900">Entrega en Google Classroom</h3>
+        </div>
+        <button onclick="closeClassroomModal()" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
+      </div>
+
+      <div class="space-y-3 text-xs text-slate-700 leading-relaxed">
+        <p class="font-semibold text-slate-800">Sigue estos sencillos pasos para enviar tu tarea:</p>
+        
+        <ol class="list-decimal list-inside space-y-2 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+          <li>Descarga tu informe PDF pulsando en <strong>"Descargar Informe PDF"</strong>.</li>
+          <li>Haz clic en el botón de abajo para <strong>copiar el resumen de notas</strong> en tu portapapeles.</li>
+          <li>Abre tu tarea en <strong>Google Classroom</strong>.</li>
+          <li>Adjunta el archivo <strong>.PDF descargado</strong> como archivo adjunto.</li>
+          <li>Pega el resumen copiado en el campo de <strong>Comentario Privado</strong> para tu profesor/a y pulsa <strong>Entregar</strong>.</li>
+        </ol>
+
+        <div class="p-3 bg-eco-50 rounded-xl border border-eco-200 font-mono text-[11px] text-eco-900" id="classroom-summary-preview">
+          <!-- Vista previa resumen -->
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-2 pt-2">
+        <button onclick="copyClassroomSummary()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition flex items-center justify-center space-x-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+          <span id="copy-btn-text">Copiar Resumen al Portapapeles</span>
+        </button>
+        <button onclick="closeClassroomModal()" class="w-full bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-2.5 px-4 rounded-xl text-xs transition">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PIE DE PÁGINA -->
+  <footer class="bg-slate-900 text-slate-400 py-6 border-t border-slate-800 text-center text-xs no-print mt-12">
+    <div class="max-w-7xl mx-auto px-4 space-y-1">
+      <p class="font-bold text-slate-300">Cuestionario Educativo Interactivo: EL MEDIO NATURAL (40 Preguntas)</p>
+      <p class="text-slate-500">Diseñado para Biología y Geología • Compatible con Google Classroom y Exportación PDF</p>
+    </div>
+  </footer>
+
+  <!-- SCRIPT DE LÓGICA COMPLETA DE LA APLICACIÓN -->
+  <script>
+    /* ==========================================================================
+       ILUSTRACIONES SVG EMBEBIDAS PARA PREGUNTAS CLAVE
+       ========================================================================== */
+    const SVG_ECOSISTEMA_FORMULA = `
+      <svg class="w-full max-w-md h-32 text-eco-700" viewBox="0 0 400 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="10" y="20" width="100" height="60" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+        <text x="60" y="45" font-size="11" font-weight="bold" fill="#14532d" text-anchor="middle">BIOTOPO</text>
+        <text x="60" y="60" font-size="9" fill="#166534" text-anchor="middle">(Medio Físico)</text>
+        
+        <text x="125" y="55" font-size="20" font-weight="bold" fill="#15803d">+</text>
+        
+        <rect x="140" y="20" width="110" height="60" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+        <text x="195" y="45" font-size="11" font-weight="bold" fill="#14532d" text-anchor="middle">BIOCENOSIS</text>
+        <text x="195" y="60" font-size="9" fill="#166534" text-anchor="middle">(Seres Vivos)</text>
+        
+        <text x="265" y="55" font-size="20" font-weight="bold" fill="#15803d">=</text>
+        
+        <rect x="280" y="15" width="110" height="70" rx="12" fill="#15803d" stroke="#14532d" stroke-width="2"/>
+        <text x="335" y="45" font-size="12" font-weight="extrabold" fill="#ffffff" text-anchor="middle">ECOSISTEMA</text>
+        <text x="335" y="62" font-size="8" fill="#bbf7d0" text-anchor="middle">Interacciones +</text>
+        <text x="335" y="72" font-size="8" fill="#bbf7d0" text-anchor="middle">Autorregulación</text>
+      </svg>`;
+
+    const SVG_RELACIONES_BIOTICAS = `
+      <svg class="w-full max-w-md h-32 text-slate-700" viewBox="0 0 400 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="60" cy="50" r="30" fill="#fee2e2" stroke="#ef4444" stroke-width="2"/>
+        <text x="60" y="48" font-size="10" font-weight="bold" fill="#991b1b" text-anchor="middle">MUTUALISMO</text>
+        <text x="60" y="62" font-size="12" font-weight="extrabold" fill="#15803d" text-anchor="middle">(+ / +)</text>
+
+        <circle cx="150" cy="50" r="30" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+        <text x="150" y="48" font-size="10" font-weight="bold" fill="#92400e" text-anchor="middle">DEPREDACIÓN</text>
+        <text x="150" y="62" font-size="12" font-weight="extrabold" fill="#b91c1c" text-anchor="middle">(+ / -)</text>
+
+        <circle cx="240" cy="50" r="30" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/>
+        <text x="240" y="48" font-size="10" font-weight="bold" fill="#075985" text-anchor="middle">COMENSALISMO</text>
+        <text x="240" y="62" font-size="12" font-weight="extrabold" fill="#0369a1" text-anchor="middle">(+ / 0)</text>
+
+        <circle cx="330" cy="50" r="30" fill="#f3e8ff" stroke="#a855f7" stroke-width="2"/>
+        <text x="330" y="48" font-size="10" font-weight="bold" fill="#6b21a8" text-anchor="middle">COMPETENCIA</text>
+        <text x="330" y="62" font-size="12" font-weight="extrabold" fill="#7e22ce" text-anchor="middle">(- / -)</text>
+      </svg>`;
+
+    const SVG_FLUJO_PIRAMIDE = `
+      <svg class="w-full max-w-md h-36" viewBox="0 0 350 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="175,10 280,100 70,100" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+        <line x1="105" y1="70" x2="245" y2="70" stroke="#16a34a" stroke-width="1.5"/>
+        <line x1="135" y1="40" x2="215" y2="40" stroke="#16a34a" stroke-width="1.5"/>
+        
+        <text x="175" y="32" font-size="9" font-weight="bold" fill="#14532d" text-anchor="middle">Carnívoros (3º/2º)</text>
+        <text x="175" y="58" font-size="10" font-weight="bold" fill="#14532d" text-anchor="middle">Consumidores Primarios</text>
+        <text x="175" y="88" font-size="11" font-weight="extrabold" fill="#14532d" text-anchor="middle">PRODUCTORES (Autótrofos)</text>
+
+        <!-- Flecha de Energía Solar -->
+        <path d="M 20,85 Q 45,85 60,85" stroke="#eab308" stroke-width="3" marker-end="url(#arrow)"/>
+        <text x="35" y="78" font-size="8" font-weight="bold" fill="#a16207">Sol ☀️</text>
+      </svg>`;
+
+    const SVG_ESPACIOS_ANDALUCIA = `
+      <svg class="w-full max-w-md h-32" viewBox="0 0 380 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20,40 Q100,10 200,30 T360,20 Q370,80 280,95 T80,85 Z" fill="#f0fdf4" stroke="#15803d" stroke-width="2"/>
+        <circle cx="80" cy="70" r="6" fill="#ef4444"/><text x="80" y="88" font-size="8" font-weight="bold" fill="#991b1b" text-anchor="middle">Doñana</text>
+        <circle cx="220" cy="75" r="6" fill="#ef4444"/><text x="220" y="92" font-size="8" font-weight="bold" fill="#991b1b" text-anchor="middle">S. Nevada</text>
+        <circle cx="150" cy="78" r="6" fill="#ef4444"/><text x="150" y="95" font-size="8" font-weight="bold" fill="#991b1b" text-anchor="middle">S. Nieves</text>
+        <text x="190" y="25" font-size="10" font-weight="black" fill="#14532d" text-anchor="middle">PARQUES NACIONALES DE ANDALUCÍA</text>
+      </svg>`;
+
+    const SVG_WANGARI_MEDAL = `
+      <svg class="w-full max-w-md h-28" viewBox="0 0 350 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="60" cy="45" r="32" fill="#fef3c7" stroke="#d97706" stroke-width="3"/>
+        <text x="60" y="42" font-size="10" font-weight="black" fill="#92400e" text-anchor="middle">NOBEL</text>
+        <text x="60" y="54" font-size="9" font-weight="bold" fill="#92400e" text-anchor="middle">PAZ 2004</text>
+        
+        <text x="110" y="38" font-size="13" font-weight="black" fill="#14532d">Wangari Maathai (Kenia)</text>
+        <text x="110" y="54" font-size="10" font-weight="bold" fill="#166534">Movimiento Cinturón Verde 🌱</text>
+        <text x="110" y="68" font-size="9" fill="#475569">+47 Millones de Árboles Plantados</text>
+      </svg>`;
+
+    /* ==========================================================================
+       BANCO DE DATOS: 40 PREGUNTAS EXHAUSTIVAS (PÁGINAS 1 A 8 DEL PDF)
+       ========================================================================== */
+    const PREGUNTAS_BASE = [
+      // PÁGINA 1: CONCEPTOS FUNDAMENTALES Y ECOSISTEMA
+      {
+        id: 1,
+        category: "Conceptos Básicos",
+        q: "1. ¿Qué es la Biosfera según el documento de estudio?",
+        svg: null,
+        options: [
+          { text: "El conjunto de todos los seres vivos que habitan la Tierra.", correct: true },
+          { text: "El medio físico inanimado compuesto solo por rocas y agua.", correct: false },
+          { text: "Un ecosistema acuático exclusivo de los océanos profundos.", correct: false },
+          { text: "La capa gaseosa de la atmósfera donde vuelan las aves.", correct: false }
+        ],
+        exp: "La biosfera abarca la totalidad de los seres vivos que habitan el planeta Tierra."
+      },
+      {
+        id: 2,
+        category: "Conceptos Básicos",
+        q: "2. ¿Cómo se define el concepto de Medioambiente?",
+        svg: null,
+        options: [
+          { text: "Son todos los elementos o factores, vivos o inanimados, que rodean a un organismo e influyen sobre él.", correct: true },
+          { text: "Es únicamente el clima y la temperatura de un bosque.", correct: false },
+          { text: "El conjunto de animales carnívoros de una selva.", correct: false },
+          { text: "La ciencia que estudia la contaminación industrial.", correct: false }
+        ],
+        exp: "El medioambiente incluye tanto factores bióticos (vivos) como abióticos (inanimados) que rodean e interactúan con un organismo."
+      },
+      {
+        id: 3,
+        category: "Conceptos Básicos",
+        q: "3. ¿Qué diferencia existe entre el Hábitat y la Ecosfera?",
+        svg: null,
+        options: [
+          { text: "El Hábitat es el lugar favorable donde vive una especie; la Ecosfera es el conjunto de todos los ecosistemas del planeta.", correct: true },
+          { text: "El Hábitat es global y la Ecosfera es un río local.", correct: false },
+          { text: "Son términos idénticos que significan lo mismo en ecología.", correct: false },
+          { text: "La Ecosfera solo incluye factores abióticos y el Hábitat solo seres vivos.", correct: false }
+        ],
+        exp: "El hábitat es el entorno local favorable para la supervivencia de una especie, mientras que la ecosfera comprende la totalidad de los ecosistemas interconectados de la Tierra."
+      },
+      {
+        id: 4,
+        category: "Componentes del Ecosistema",
+        q: "4. ¿Cuál de las siguientes fórmulas define correctamente los componentes de un Ecosistema?",
+        svg: SVG_ECOSISTEMA_FORMULA,
+        options: [
+          { text: "Ecosistema = Biotopo + Biocenosis + Interacciones + Autorregulación", correct: true },
+          { text: "Ecosistema = Solo Biotopo + Atmósfera", correct: false },
+          { text: "Ecosistema = Biocenosis + Poblaciones de una sola especie", correct: false },
+          { text: "Ecosistema = Cadena trófica + Energía solar únicamente", correct: false }
+        ],
+        exp: "Un ecosistema se compone del biotopo (medio físico), la biocenosis (seres vivos), las interacciones entre ellos y sus mecanismos de autorregulación."
+      },
+      {
+        id: 5,
+        category: "Componentes del Ecosistema",
+        q: "5. ¿En qué se diferencian el Biotopo y la Biocenosis?",
+        svg: null,
+        options: [
+          { text: "El Biotopo es el medio físico y sus condiciones (temperatura, suelo, agua); la Biocenosis es la parte viva (seres vivos).", correct: true },
+          { text: "El Biotopo son los animales y la Biocenosis las plantas.", correct: false },
+          { text: "El Biotopo es acuático y la Biocenosis es terrestre.", correct: false },
+          { text: "La Biocenosis es inanimada y el Biotopo está vivo.", correct: false }
+        ],
+        exp: "El biotopo comprende el entorno físico-químico inerte y la biocenosis reúne a todos los organismos vivos que habitan en él."
+      },
+      {
+        id: 6,
+        category: "Conceptos Básicos",
+        q: "6. ¿Qué es una Población en Ecología?",
+        svg: null,
+        options: [
+          { text: "Un conjunto de seres vivos de una misma especie que habitan en el mismo lugar.", correct: true },
+          { text: "Todos los animales y plantas de diferentes especies de un bosque.", correct: false },
+          { text: "El conjunto de factores abióticos de una montaña.", correct: false },
+          { text: "Un grupo de especies diferentes que compiten por comida.", correct: false }
+        ],
+        exp: "Una población está formada por individuos de la misma especie que comparten un espacio y tiempo determinado."
+      },
+
+      // PÁGINA 2: FACTORES ABIÓTICOS
+      {
+        id: 7,
+        category: "Factores Abióticos",
+        q: "7. ¿Qué son los Factores Abióticos?",
+        svg: null,
+        options: [
+          { text: "Factores inanimados del medio físico que condicionan la existencia, distribución y tamaño de los seres vivos.", correct: true },
+          { text: "Las relaciones de depredación entre animales.", correct: false },
+          { text: "Los microorganismos descomponedores del suelo.", correct: false },
+          { text: "Las enfermedades parasitarias en las poblaciones.", correct: false }
+        ],
+        exp: "Los factores abióticos son variables físico-químicas (temperatura, luz, agua, suelo) que determinan dónde y cómo pueden vivir los organismos."
+      },
+      {
+        id: 8,
+        category: "Factores Abióticos",
+        q: "8. ¿Cómo actúa la Temperatura como factor abiótico en el medio terrestre frente al acuático?",
+        svg: null,
+        options: [
+          { text: "En el medio terrestre hay grandes variaciones anuales que regulan funciones vitales; en el acuático es más uniforme.", correct: true },
+          { text: "En el medio acuático varía bruscamente cada hora y en el terrestre nunca cambia.", correct: false },
+          { text: "La temperatura no influye en las funciones de las plantas terrestres.", correct: false },
+          { text: "En los mares la temperatura siempre se mantiene a cero grados.", correct: false }
+        ],
+        exp: "El agua tiene alta capacidad térmica haciendo el medio acuático estable, mientras que el medio terrestre sufre notables fluctuaciones térmicas estacionales."
+      },
+      {
+        id: 9,
+        category: "Factores Abióticos",
+        q: "9. Respecto a la Luz como factor abiótico, ¿qué ocurre en el medio acuático?",
+        svg: null,
+        options: [
+          { text: "Solo llega a la zona superficial, donde se concentran los organismos fotosintéticos como las algas.", correct: true },
+          { text: "Ilumina con la misma intensidad hasta el fondo del océano.", correct: false },
+          { text: "Impide el crecimiento de algas y plantas acuáticas.", correct: false },
+          { text: "Atraviesa más profundamente que en la atmósfera terrestre.", correct: false }
+        ],
+        exp: "La luz se atenúa rápidamente en el agua, restringiendo la fotosíntesis a la zona fótica o superficial."
+      },
+      {
+        id: 10,
+        category: "Factores Abióticos",
+        q: "10. ¿Qué adaptación presentan muchas plantas del desierto ante la disponibilidad de agua?",
+        svg: null,
+        options: [
+          { text: "Transformar sus hojas en espinas para evitar la pérdida de agua por transpiración.", correct: true },
+          { text: "Desarrollar hojas gigantescas para captar más humedad.", correct: false },
+          { text: "Perder las raíces para no absorber sales minerales.", correct: false },
+          { text: "Flotar en la superficie de los charcos efímeros.", correct: false }
+        ],
+        exp: "Las espinas reducen la superficie de evaporación y protegen las reservas de agua acumuladas en los tallos carnosos."
+      },
+      {
+        id: 11,
+        category: "Factores Abióticos",
+        q: "11. ¿Qué componentes aporta el Suelo como soporte y reserva nutritiva para las plantas?",
+        svg: null,
+        options: [
+          { text: "Sustancias orgánicas (humus), minerales, agua y oxígeno.", correct: true },
+          { text: "Únicamente piedras sin nutrientes ni humedad.", correct: false },
+          { text: "Solo dióxido de carbono concentrado en estado líquido.", correct: false },
+          { text: "Bacterias patógenas y veneno inorgánico exclusivamente.", correct: false }
+        ],
+        exp: "El suelo proporciona una mezcla compleja de humus (materia orgánica), minerales disueltos, agua retenida y aireación."
+      },
+
+      // PÁGINA 3: FACTORES BIÓTICOS Y RELACIONES
+      {
+        id: 12,
+        category: "Factores Bióticos",
+        q: "12. ¿Qué son las relaciones Intraespecíficas e Interespecíficas?",
+        svg: null,
+        options: [
+          { text: "Intraespecíficas ocurren entre individuos de la misma especie; Interespecíficas entre especies diferentes.", correct: true },
+          { text: "Intraespecíficas son entre plantas y rocas; Interespecíficas entre animales.", correct: false },
+          { text: "Intraespecíficas se dan en el mar y Interespecíficas en la tierra.", correct: false },
+          { text: "Son términos que describen los factores abióticos del clima.", correct: false }
+        ],
+        exp: "Las relaciones intraespecíficas vinculan a miembros de una misma población; las interespecíficas conectan a especies distintas de la comunidad."
+      },
+      {
+        id: 13,
+        category: "Relaciones Bióticas",
+        q: "13. ¿A qué tipo de asociación intraespecífica corresponden las abejas con jerarquización de tareas?",
+        svg: SVG_RELACIONES_BIOTICAS,
+        options: [
+          { text: "Asociación Estatal", correct: true },
+          { text: "Asociación Colonial", correct: false },
+          { text: "Asociación Gregaria", correct: false },
+          { text: "Asociación Familiar", correct: false }
+        ],
+        exp: "Las sociedades estatales (como abejas u hormigas) presentan diferenciación morfológica y división del trabajo en castas."
+      },
+      {
+        id: 14,
+        category: "Relaciones Bióticas",
+        q: "14. Los pingüinos se unen en grupos no emparentados para defenderse o buscar alimento. ¿Qué tipo de asociación es?",
+        svg: null,
+        options: [
+          { text: "Asociación Gregaria", correct: true },
+          { text: "Asociación Familiar", correct: false },
+          { text: "Asociación Estatal", correct: false },
+          { text: "Parasitismo obligado", correct: false }
+        ],
+        exp: "Las asociaciones gregarias son agrupaciones temporales de individuos no emparentados para obtener beneficios de transporte, defensa o caza."
+      },
+      {
+        id: 15,
+        category: "Relaciones Bióticas",
+        q: "15. La lucha de dos ciervos machos por las hembras en época de apareamiento es un ejemplo de:",
+        svg: null,
+        options: [
+          { text: "Competencia intraespecífica (negativa)", correct: true },
+          { text: "Comensalismo simbiótico", correct: false },
+          { text: "Depredación directa", correct: false },
+          { text: "Mutualismo colonial", correct: false }
+        ],
+        exp: "Al disputarse un recurso limitado (pareja o territorio), los miembros de la misma especie compiten perjudicándose individualmente."
+      },
+      {
+        id: 16,
+        category: "Relaciones Bióticas",
+        q: "16. La lucha entre buitres e hienas por el cadáver de una presa representa una relación interespecífica de:",
+        svg: null,
+        options: [
+          { text: "Competencia interespecífica (ambas se perjudican por un recurso)", correct: true },
+          { text: "Simbiosis obligada", correct: false },
+          { text: "Mutualismo beneficioso", correct: false },
+          { text: "Comensalismo neutro", correct: false }
+        ],
+        exp: "Dos especies distintas compiten por el mismo recurso trófico, lo que genera desgaste y perjuicio para ambas."
+      },
+      {
+        id: 17,
+        category: "Relaciones Bióticas",
+        q: "17. ¿En qué se diferencian la Depredación y el Parasitismo?",
+        svg: null,
+        options: [
+          { text: "En la depredación el depredador mata a la presa para alimentarse; en el parasitismo el parásito vive a expensas del hospedador causándole daño sin matarlo inmediatamente.", correct: true },
+          { text: "En la depredación ambas especies ganan y en el parasitismo pierden.", correct: false },
+          { text: "El parasitismo ocurre solo en vegetales y la depredación en minerales.", correct: false },
+          { text: "Son relaciones donde nadie sale perjudicado.", correct: false }
+        ],
+        exp: "El depredador captura y consume a la presa de inmediato; el parásito habita en o sobre el hospedador alimentándose gradualmente."
+      },
+      {
+        id: 18,
+        category: "Relaciones Bióticas",
+        q: "18. ¿Qué distingue al Mutualismo Simbiótico (Simbiosis) del Mutualismo sencillo?",
+        svg: null,
+        options: [
+          { text: "En la Simbiosis las dos especies asociadas dependen estrictamente una de otra y no pueden vivir separadas (ej. liquen).", correct: true },
+          { text: "En la Simbiosis una especie muere siempre.", correct: false },
+          { text: "El mutualismo sencillo es perjudicial y la simbiosis es neutra.", correct: false },
+          { text: "En el liquen el hongo destruye al alga.", correct: false }
+        ],
+        exp: "La simbiosis (mutualismo obligatorio) requiere una integración íntima y permanente sin la cual las especies no sobreviven de forma independiente."
+      },
+      {
+        id: 19,
+        category: "Relaciones Bióticas",
+        q: "19. Las orquídeas que crecen sobre las ramas de árboles altos para recibir luz sin causar daño al árbol son un ejemplo de:",
+        svg: null,
+        options: [
+          { text: "Comensalismo (una se beneficia y la otra queda indiferente)", correct: true },
+          { text: "Parasitismo destructivo", correct: false },
+          { text: "Depredación vegetal", correct: false },
+          { text: "Competencia intraespecífica", correct: false }
+        ],
+        exp: "En el comensalismo, el comensal se aprovecha del soporte, transporte o alimento de otra especie sin beneficiarla ni perjudicarla (0 / +)."
+      },
+
+      // PÁGINA 4: NIVELES TRÓFICOS Y CADENAS
+      {
+        id: 20,
+        category: "Niveles Tróficos",
+        q: "20. ¿Qué es un Nivel Trófico y qué organismos constituyen el primer nivel?",
+        svg: null,
+        options: [
+          { text: "Es el conjunto de especies que obtienen materia y energía de la misma forma; los Productores (autótrofos) forman el primer nivel.", correct: true },
+          { text: "Es el grupo de carnívoros superdepredadores únicamente.", correct: false },
+          { text: "Los consumidores primarios forman el primer nivel trófico por transformar el sol.", correct: false },
+          { text: "Son las rocas y minerales del biotopo.", correct: false }
+        ],
+        exp: "Los productores (plantas y algas) son los únicos capaces de transformar materia inorgánica en orgánica mediante fotosíntesis, iniciando la cadena."
+      },
+      {
+        id: 21,
+        category: "Niveles Tróficos",
+        q: "21. ¿A qué nivel trófico pertenecen animales como la vaca, el colibrí y el caracol?",
+        svg: null,
+        options: [
+          { text: "Consumidores primarios (herbívoros heterótrofos).", correct: true },
+          { text: "Productores autótrofos.", correct: false },
+          { text: "Consumidores secundarios carnívoros.", correct: false },
+          { text: "Descomponedores bacterianos.", correct: false }
+        ],
+        exp: "Todos los herbívoros se alimentan directamente de los productores, por lo que son consumidores primarios."
+      },
+      {
+        id: 22,
+        category: "Niveles Tróficos",
+        q: "22. ¿Qué función ecológica fundamental desempeñan los Descomponedores (hongos y bacterias)?",
+        svg: null,
+        options: [
+          { text: "Transforman los restos orgánicos en materia inorgánica accesible para los productores, cerrando el ciclo de la materia.", correct: true },
+          { text: "Cazan herbívoros vivos para reducir las plagas.", correct: false },
+          { text: "Absorben la luz solar para fabricar glucosa.", correct: false },
+          { text: "Expulsan el oxígeno necesario para la fotosíntesis.", correct: false }
+        ],
+        exp: "Sin descomponedores, los restos orgánicos se acumularían y los nutrientes inorgánicos del suelo se agotarían por completo."
+      },
+      {
+        id: 23,
+        category: "Relaciones Tróficas",
+        q: "23. ¿En qué se diferencia una Cadena Trófica de una Red Trófica?",
+        svg: null,
+        options: [
+          { text: "La Cadena es una representación lineal simple; la Red es un entramado complejo de múltiples cadenas interconectadas.", correct: true },
+          { text: "La Cadena incluye solo vegetales y la Red solo animales.", correct: false },
+          { text: "La Red trófica no incluye descomponedores.", correct: false },
+          { text: "Son sinónimos estrictos en biología.", correct: false }
+        ],
+        exp: "En la naturaleza los organismos consumen múltiples presas; por ello, la red trófica refleja la compleja trama real del ecosistema."
+      },
+
+      // PÁGINA 5: FLUJO DE ENERGÍA/MATERIA Y RUPTURA DEL EQUILIBRIO
+      {
+        id: 24,
+        category: "Flujo de Energía y Materia",
+        q: "24. ¿Cómo fluyen la Energía y la Materia en un ecosistema?",
+        svg: SVG_FLUJO_PIRAMIDE,
+        options: [
+          { text: "La Energía fluye en una sola dirección (flujo abierto y se disipa como calor); la Materia se recicla en un ciclo cerrado.", correct: true },
+          { text: "La energía se recicla infinitamente y la materia se destruye.", correct: false },
+          { text: "Ambos fluyen en circuitos cerrados sin pérdidas.", correct: false },
+          { text: "La energía ingresa por los descomponedores hacia el Sol.", correct: false }
+        ],
+        exp: "La energía solar entra, pasa entre niveles perdiéndose como calor metabólico (flujo unidireccional abierto); la materia se recicla continuamente."
+      },
+      {
+        id: 25,
+        category: "Flujo de Energía y Materia",
+        q: "25. En las Pirámides Tróficas (de energía, biomasa o número), ¿por qué la base es más ancha?",
+        svg: null,
+        options: [
+          { text: "Porque los productores poseen la mayor cantidad de materia/energía, disminuyendo al ascender de nivel.", correct: true },
+          { text: "Porque los superdepredadores son más numerosos que las plantas.", correct: false },
+          { text: "Porque los descomponedores se sitúan en la cúspide.", correct: false },
+          { text: "Para evitar que la pirámide se desmorone físicamente.", correct: false }
+        ],
+        exp: "Debido a las pérdidas energéticas en cada transferencia (alrededor del 90%), cada nivel trófico superior sostiene menos biomasa y energía."
+      },
+      {
+        id: 26,
+        category: "Autorregulación",
+        q: "26. ¿Qué es una Plaga y qué método biológico previene su aparición sin contaminar?",
+        svg: null,
+        options: [
+          { text: "Crecimiento exagerado de una población dañina; se controla con lucha biológica usando depredadores naturales o feromonas.", correct: true },
+          { text: "La llegada de lluvia torrencial; se combate quemando el bosque.", correct: false },
+          { text: "El aumento de árboles viejos; se controla con pesticidas masivos.", correct: false },
+          { text: "Un grupo de especies en peligro de extinción.", correct: false }
+        ],
+        exp: "El control biológico utiliza enemigos naturales (ej. mariquitas contra pulgones) evitando el impacto químico de los pesticidas."
+      },
+      {
+        id: 27,
+        category: "Invasiones Biológicas",
+        q: "27. Ejemplos de especies invasoras alóctonas citadas en Andalucía que alteran el equilibrio ecológico:",
+        svg: null,
+        options: [
+          { text: "Mejillón cebra, Hierba de las pampas y Tortuga de Florida.", correct: true },
+          { text: "Lince ibérico, Águila imperial y Pinsapo.", correct: false },
+          { text: "Trucha común, Romero y Encina.", correct: false },
+          { text: "Buitre leonado y Flamenco rosa.", correct: false }
+        ],
+        exp: "Las especies alóctonas introducidas compiten agresivamente y desplazan a la fauna y flora autóctona local."
+      },
+
+      // PÁGINA 6: PROTECCIÓN AMBIENTAL Y ESPACIOS PROTEGIDOS
+      {
+        id: 28,
+        category: "Protección Ambiental",
+        q: "28. ¿Por qué es vital la creación de Bancos de Semillas como medida de conservación?",
+        svg: null,
+        options: [
+          { text: "Para proteger y preservar especies vegetales amenazadas (como el olmo frente a la grafiosis) y salvaguardar la biodiversidad.", correct: true },
+          { text: "Para vender cereales a países extranjeros únicamente.", correct: false },
+          { text: "Para sustituir todos los bosques naturales por cultivos sintéticos.", correct: false },
+          { text: "Para alimentar a las plagas de insectos en invierno.", correct: false }
+        ],
+        exp: "Los bancos de germoplasma conservan el patrimonio genético vegetal impidiendo la extinción definitiva por plagas o destrucción del hábitat."
+      },
+      {
+        id: 29,
+        category: "Espacios Protegidos",
+        q: "29. ¿Cuáles son los tres Parques Nacionales de Andalucía que también son Reservas de la Biosfera?",
+        svg: SVG_ESPACIOS_ANDALUCIA,
+        options: [
+          { text: "Doñana, Sierra Nevada y Sierra de las Nieves.", correct: true },
+          { text: "Cazorla, Despeñaperros y Sierra Mágina.", correct: false },
+          { text: "Cabo de Gata, Los Alcornocales y Grazalema.", correct: false },
+          { text: "Sierra Norte, Hornachuelos y Bahía de Cádiz.", correct: false }
+        ],
+        exp: "Doñana (Huelva/Sevilla/Cádiz), Sierra Nevada (Granada/Almería) y Sierra de las Nieves (Málaga) ostentan el máximo grado de protección nacional."
+      },
+      {
+        id: 30,
+        category: "Espacios Protegidos",
+        q: "30. ¿Qué relevancia tienen los Humedales en Andalucía según el texto?",
+        svg: null,
+        options: [
+          { text: "Andalucía posee el patrimonio natural de humedales más rico y mejor conservado de España y la UE, protegidos por un Plan autonómico.", correct: true },
+          { text: "Son zonas secas desprovistas de vida silvestre.", correct: false },
+          { text: "Se han desecado todos para construir urbanizaciones de lujo.", correct: false },
+          { text: "Solo existen dos pequeños estanques artificiales.", correct: false }
+        ],
+        exp: "Los humedales andaluces (como las Marismas del Guadalquivir u Odiel) son enclaves cruciales para las rutas migratorias de aves europeas y africanas."
+      },
+
+      // PÁGINA 7: ECOSISTEMAS DE ANDALUCÍA
+      {
+        id: 31,
+        category: "Ecosistemas de Andalucía",
+        q: "31. ¿Qué caracteriza al ecosistema mediterráneo de La Dehesa andaluza?",
+        svg: null,
+        options: [
+          { text: "Es un bosque mediterráneo aclarado por la tala selectiva y el pastoreo controlado, ejemplo de desarrollo sostenible.", correct: true },
+          { text: "Un desierto de dunas vivas sin árboles.", correct: false },
+          { text: "Una selva tropical lluviosa impenetrable.", correct: false },
+          { text: "Un ecosistema urbano cubierto de asfalto.", correct: false }
+        ],
+        exp: "La dehesa combina la conservación de encinas y alcornoques con un aprovechamiento ganadero y agrícola equilibrado."
+      },
+      {
+        id: 32,
+        category: "Ecosistemas de Andalucía",
+        q: "32. ¿Qué adaptaciones presentan las plantas del Bosque Mediterráneo (encinas, alcornoques, acebuches)?",
+        svg: null,
+        options: [
+          { text: "Raíces profundas, cortezas gruesas y hojas pequeñas, rígidas y coriáceas para resistir los secos veranos.", correct: true },
+          { text: "Hojas carnosas gigante de ambientes ecuatoriales.", correct: false },
+          { text: "Ausencia completa de corteza y raíz.", correct: false },
+          { text: "Pérdida de clorofila durante la primavera.", correct: false }
+        ],
+        exp: "Las especies esclerófilas mediterráneas están fisiológicamente adaptadas para minimizar la transpiración en la sequía estival."
+      },
+      {
+        id: 33,
+        category: "Ecosistemas de Andalucía",
+        q: "33. ¿Qué especies componen principalmente el Bosque de Coníferas en las montañas andaluzas?",
+        svg: null,
+        options: [
+          { text: "Pinos, pinsapos, sabinas, enebros y tejos con hojas en forma de aguja.", correct: true },
+          { text: "Eucaliptos y palmeras datileras únicamente.", correct: false },
+          { text: "Helechos gigantes y musgos acuáticos.", correct: false },
+          { text: "Cactus y matorrales espinosos de desierto.", correct: false }
+        ],
+        exp: "Las coníferas de montaña poseen hojas aciculares endurecidas preparadas para soportar la nieve, heladas y sequía."
+      },
+      {
+        id: 34,
+        category: "Ecosistemas de Andalucía",
+        q: "34. ¿Qué son los 'Canutos' dentro de los bosques de caducifolios y ribera andaluces?",
+        svg: null,
+        options: [
+          { text: "Bosques de galería en valles angostos donde las copas de los árboles de ambas orillas se entrelazan formando arcos.", correct: true },
+          { text: "Canales de riego artificiales de hormigón.", correct: false },
+          { text: "Cuevas subterráneas donde habitan murciélagos.", correct: false },
+          { text: "Troncos secos caídos en el lecho del río.", correct: false }
+        ],
+        exp: "Los canutos (típicos de Los Alcornocales) albergan relictos de vegetación de laurisilva gracias al microclima de humedad constante."
+      },
+      {
+        id: 35,
+        category: "Ecosistemas de Andalucía",
+        q: "35. ¿Qué zona semiárida y desértica destaca en Andalucía con vegetación de esparto y escobilla?",
+        svg: null,
+        options: [
+          { text: "El Desierto de Tabernas en Almería y los arenales costeros de Doñana.", correct: true },
+          { text: "Los picos nevados de Sierra Nevada.", correct: false },
+          { text: "Las marismas del río Barbate.", correct: false },
+          { text: "El bosque caducifolio de Grazalema.", correct: false }
+        ],
+        exp: "El Desierto de Tabernas representa uno de los pocos subdesiertos de Europa con flora esteparia altamente especializada."
+      },
+
+      // PÁGINA 8: LITORAL, RÍOS, MARISMAS Y WANGARI MAATHAI
+      {
+        id: 36,
+        category: "Medio Acuático y Litoral",
+        q: "36. En el Litoral Mediterráneo andaluz, ¿qué hábitat submarino clave destaca por albergar gran biodiversidad de peces y moluscos?",
+        svg: SVG_ESPACIOS_ANDALUCIA,
+        options: [
+          { text: "La pradera de Posidonia oceanica.", correct: true },
+          { text: "Los manglares de agua dulce.", correct: false },
+          { text: "Los arrecifes de hielo profundo.", correct: false },
+          { text: "Las dunas de arena movediza sin vegetación.", correct: false }
+        ],
+        exp: "La fanerógama marina *Posidonia oceanica* forma dehesas marinas fundamentales como zona de cría y oxigenación de las aguas."
+      },
+      {
+        id: 37,
+        category: "Medio Acuático y Litoral",
+        q: "37. En el Litoral Atlántico andaluz, ¿qué arte tradicional de pesca milenaria se practica para capturar el atún?",
+        svg: null,
+        options: [
+          { text: "La Almadraba.", correct: true },
+          { text: "La pesca de arrastre profundo.", correct: false },
+          { text: "El arrastre con veneno.", correct: false },
+          { text: "La acuicultura de estanque cerrado.", correct: false }
+        ],
+        exp: "La almadraba es un laberinto de redes fijo y sostenible utilizado en Cádiz y Huelva desde la época romana para la captura del atún rojo."
+      },
+      {
+        id: 38,
+        category: "Medio Acuático y Litoral",
+        q: "38. ¿Cómo varían las especies de peces en los ríos según sus tramos (Alto, Medio y Bajo)?",
+        svg: null,
+        options: [
+          { text: "Tramo Alto (trucha), Tramo Medio (fraile, barbo, lucio) y Tramo Bajo (carpa, tenca, esturión).", correct: true },
+          { text: "En todos los tramos viven exactamente las mismas especies de tiburones.", correct: false },
+          { text: "En el tramo alto solo hay peces marinos de agua salada.", correct: false },
+          { text: "En el tramo bajo el agua está hirviendo y no hay peces.", correct: false }
+        ],
+        exp: "La velocidad de la corriente, oxigenación y temperatura del río determinan la zonación piscícola desde la cabecera hasta la desembocadura."
+      },
+      {
+        id: 39,
+        category: "Medio Acuático y Litoral",
+        q: "39. ¿Qué son las Marismas y cuáles destacan en Andalucía?",
+        svg: null,
+        options: [
+          { text: "Humedales costeros asociados a deltas/estuarios; destacan las del Odiel (Huelva), Guadalquivir y Barbate (Cádiz).", correct: true },
+          { text: "Lagos de agua dulce situados a más de 3000 metros de altitud.", correct: false },
+          { text: "Embalses artificiales construidos para centrales nucleares.", correct: false },
+          { text: "Zonas de alta montaña donde nacen los ríos helados.", correct: false }
+        ],
+        exp: "Las marismas son zonas de transición mareal entre aguas dulces y marinas con una riqueza biológica extraordinaria."
+      },
+      {
+        id: 40,
+        category: "Wangari Maathai",
+        q: "40. ¿Por qué hito histórico y medioambiental recibió Wangari Maathai el Premio Nobel de la Paz en 2004?",
+        svg: SVG_WANGARI_MEDAL,
+        options: [
+          { text: "Por fundar el Movimiento Cinturón Verde en Kenia, promoviendo que las mujeres plantasen más de 47 millones de árboles contra la deforestación y pobreza.", correct: true },
+          { text: "Por descubrir la cura de la peste de las plantas de maíz.", correct: false },
+          { text: "Por construir la presa hidroeléctrica más grande de África.", correct: false },
+          { text: "Por escribir un libro de clasificación de peces de río.", correct: false }
+        ],
+        exp: "Wangari Maathai vinculó la conservación ambiental, los derechos de la mujer y el desarrollo sostenible erradicando la desertificación en África."
+      }
+    ];
+
+    /* ==========================================================================
+       ESTADO DE LA APLICACIÓN
+       ========================================================================== */
+    let usuario = {
+      nombre: '',
+      apellidos: '',
+      curso: '',
+      escuela: ''
+    };
+
+    let preguntasActivas = []; // Array con preguntas y opciones barajadas via Fisher-Yates
+    let respuestasUsuario = {}; // { questionId: selectedOptionObj }
+    let indicePreguntaActual = 0;
+    let timerInterval = null;
+    let segundosTranscurridos = 0;
+    let filtroRevision = 'all';
+
+    /* ==========================================================================
+       ALGORITMO FISHER-YATES DE ALEATORIZACIÓN REAL
+       ========================================================================== */
+    function shuffleArray(array) {
+      const copy = [...array];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    /**
+     * Genera una copia limpia de las 40 preguntas y baraja
+     * COMPLETAMENTE las 4 opciones de CADA pregunta.
+     */
+    function prepararingQuestionsWithShuffledOptions() {
+      return PREGUNTAS_BASE.map(p => {
+        return {
+          id: p.id,
+          category: p.category,
+          q: p.q,
+          svg: p.svg,
+          exp: p.exp,
+          options: shuffleArray(p.options.map(opt => ({ ...opt })))
+        };
+      });
+    }
+
+    /* ==========================================================================
+       LÓGICA DE NAVEGACIÓN Y FLUJO
+       ========================================================================== */
+    function startQuiz() {
+      const name = document.getElementById('student-name').value.trim();
+      const surname = document.getElementById('student-surname').value.trim();
+      const course = document.getElementById('student-course').value.trim();
+      const school = document.getElementById('student-school').value.trim();
+      const errBox = document.getElementById('login-error-box');
+
+      if (!name || !surname || !course || !school) {
+        errBox.classList.remove('hidden');
+        return;
+      }
+      errBox.classList.add('hidden');
+
+      usuario = { nombre: name, apellidos: surname, curso: course, escuela: school };
+
+      // Reordenar mediante Fisher-Yates las respuestas
+      preguntasActivas = prepararingQuestionsWithShuffledOptions();
+      respuestasUsuario = {};
+      indicePreguntaActual = 0;
+      segundosTranscurridos = 0;
+
+      // Actualizar interfaz
+      document.getElementById('quiz-header-student').innerText = `${usuario.nombre} ${usuario.apellidos}`;
+      document.getElementById('quiz-header-course').innerText = usuario.curso;
+      document.getElementById('quiz-header-school').innerText = usuario.escuela;
+
+      // Iniciar Cronómetro
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        segundosTranscurridos++;
+        const mins = String(Math.floor(segundosTranscurridos / 60)).padStart(2, '0');
+        const secs = String(segundosTranscurridos % 60).padStart(2, '0');
+        document.getElementById('quiz-timer').innerText = `${mins}:${secs}`;
+      }, 1000);
+
+      // Cambiar de pantalla
+      document.getElementById('screen-login').classList.add('hidden');
+      document.getElementById('screen-quiz').classList.remove('hidden');
+
+      renderNavGrid();
+      loadQuestion(0);
+      updateProgressBar();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function renderNavGrid() {
+      const grid = document.getElementById('quiz-nav-grid');
+      grid.innerHTML = '';
+
+      preguntasActivas.forEach((p, idx) => {
+        const isAnswered = respuestasUsuario[p.id] !== undefined;
+        const isCurrent = idx === indicePreguntaActual;
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.onclick = () => loadQuestion(idx);
+
+        let cls = "h-8 text-xs font-bold rounded-xl transition-all flex items-center justify-center border ";
+        if (isCurrent) {
+          cls += "ring-2 ring-eco-500 bg-white text-eco-950 border-eco-500 font-extrabold shadow-sm";
+        } else if (isAnswered) {
+          cls += "bg-eco-600 text-white border-eco-700 hover:bg-eco-700";
+        } else {
+          cls += "bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200";
+        }
+
+        btn.className = cls;
+        btn.innerText = idx + 1;
+        grid.appendChild(btn);
+      });
+
+      const answeredTotal = Object.keys(respuestasUsuario).length;
+      document.getElementById('quiz-answered-count').innerText = `${answeredTotal}/40`;
+    }
+
+    function loadQuestion(index) {
+      if (index < 0 || index >= preguntasActivas.length) return;
+      indicePreguntaActual = index;
+
+      const p = preguntasActivas[index];
+
+      document.getElementById('question-category-badge').innerText = p.category;
+      document.getElementById('question-number-badge').innerText = `Pregunta ${index + 1} de 40`;
+      document.getElementById('question-text').innerText = p.q;
+
+      // Renderizar SVG si está disponible
+      const svgContainer = document.getElementById('question-svg-container');
+      if (p.svg) {
+        svgContainer.innerHTML = p.svg;
+        svgContainer.classList.remove('hidden');
+      } else {
+        svgContainer.innerHTML = '';
+        svgContainer.classList.add('hidden');
+      }
+
+      // Renderizar Opciones (barajadas)
+      const optionsContainer = document.getElementById('options-container');
+      optionsContainer.innerHTML = '';
+
+      const letters = ['A', 'B', 'C', 'D'];
+
+      p.options.forEach((opt, optIdx) => {
+        const isSelected = respuestasUsuario[p.id] === opt;
+
+        const label = document.createElement('label');
+        label.onclick = () => selectOption(p.id, opt);
+
+        let cls = "flex items-start p-4 rounded-2xl border-2 transition-all cursor-pointer group ";
+        if (isSelected) {
+          cls += "border-eco-600 bg-eco-50/80 shadow-sm font-bold text-eco-950";
+        } else {
+          cls += "border-slate-200 hover:border-eco-300 hover:bg-slate-50 text-slate-700";
+        }
+
+        label.className = cls;
+
+        label.innerHTML = `
+          <div class="flex items-center h-6 mr-3">
+            <span class="w-7 h-7 rounded-xl flex items-center justify-center font-black text-xs ${isSelected ? 'bg-eco-600 text-white' : 'bg-slate-100 text-slate-500 group-hover:bg-eco-100 group-hover:text-eco-800'}">
+              ${letters[optIdx]}
+            </span>
+          </div>
+          <div class="text-sm md:text-base leading-snug pt-0.5 flex-grow">
+            ${opt.text}
+          </div>
+          <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ml-2 mt-0.5 ${isSelected ? 'border-eco-600 bg-eco-600' : 'border-slate-300'}">
+            ${isSelected ? '<div class="w-2 h-2 rounded-full bg-white"></div>' : ''}
+          </div>
+        `;
+
+        optionsContainer.appendChild(label);
+      });
+
+      document.getElementById('btn-prev').disabled = index === 0;
+      document.getElementById('btn-next').innerText = index === preguntasActivas.length - 1 ? "Revisar Lista →" : "Siguiente →";
+
+      renderNavGrid();
+    }
+
+    function selectOption(questionId, optionObj) {
+      respuestasUsuario[questionId] = optionObj;
+      loadQuestion(indicePreguntaActual);
+      updateProgressBar();
+    }
+
+    function navigateQuestion(delta) {
+      const target = indicePreguntaActual + delta;
+      if (target >= 0 && target < preguntasActivas.length) {
+        loadQuestion(target);
+      } else if (target >= preguntasActivas.length) {
+        promptFinishQuiz();
+      }
+    }
+
+    function updateProgressBar() {
+      const count = Object.keys(respuestasUsuario).length;
+      const pct = Math.round((count / preguntasActivas.length) * 100);
+
+      document.getElementById('quiz-progress-bar').style.width = `${pct}%`;
+      document.getElementById('quiz-progress-text').innerText = `${count}/40 (${pct}%)`;
+    }
+
+    /* ==========================================================================
+       MANEJO DE PENDIENTES Y ENVÍO (DOM MODALS)
+       ========================================================================== */
+    function promptFinishQuiz() {
+      const unanswered = [];
+      preguntasActivas.forEach((p, idx) => {
+        if (respuestasUsuario[p.id] === undefined) {
+          unanswered.push(idx + 1);
+        }
+      });
+
+      if (unanswered.length > 0) {
+        document.getElementById('modal-unanswered-count').innerText = unanswered.length;
+        document.getElementById('modal-unanswered-list').innerText = `Preguntas pendientes: Nº ${unanswered.join(', ')}`;
+        document.getElementById('modal-unanswered').classList.remove('hidden');
+      } else {
+        processQuizSubmit();
+      }
+    }
+
+    function closeUnansweredModal() {
+      document.getElementById('modal-unanswered').classList.add('hidden');
+    }
+
+    function jumpToFirstUnanswered() {
+      const idx = preguntasActivas.findIndex(p => respuestasUsuario[p.id] === undefined);
+      if (idx !== -1) loadQuestion(idx);
+    }
+
+    /* ==========================================================================
+       EVALUACIÓN Y GENERACIÓN DEL INFORME
+       ========================================================================== */
+    function processQuizSubmit() {
+      clearInterval(timerInterval);
+
+      let correctCount = 0;
+      preguntasActivas.forEach(p => {
+        const userOpt = respuestasUsuario[p.id];
+        if (userOpt && userOpt.correct === true) {
+          correctCount++;
+        }
+      });
+
+      const total = preguntasActivas.length;
+      const pct = Math.round((correctCount / total) * 100);
+
+      // Formatear Tiempo
+      const mins = String(Math.floor(segundosTranscurridos / 60)).padStart(2, '0');
+      const secs = String(segundosTranscurridos % 60).padStart(2, '0');
+      const timeStr = `${mins}:${secs}`;
+
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+      // Rellenar Ficha del Informe
+      document.getElementById('res-student-fullname').innerText = `${usuario.nombre} ${usuario.apellidos}`;
+      document.getElementById('res-student-course').innerText = usuario.curso;
+      document.getElementById('res-student-school').innerText = usuario.escuela;
+      document.getElementById('res-date').innerText = dateStr;
+      document.getElementById('res-time-elapsed').innerText = `Tiempo: ${timeStr}`;
+
+      document.getElementById('res-score-number').innerText = `${correctCount} / ${total}`;
+      document.getElementById('res-score-percentage').innerText = `${pct}% de aciertos`;
+
+      // Insignia de Calificación
+      const badge = document.getElementById('res-badge');
+      if (pct >= 90) {
+        badge.innerText = "🏆 Sobresaliente";
+        badge.className = "mt-3 inline-block px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider bg-amber-400 text-amber-950 shadow";
+      } else if (pct >= 70) {
+        badge.innerText = "🌟 Notable";
+        badge.className = "mt-3 inline-block px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider bg-eco-300 text-eco-950 shadow";
+      } else if (pct >= 50) {
+        badge.innerText = "👍 Aprobado";
+        badge.className = "mt-3 inline-block px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider bg-sky-300 text-sky-950 shadow";
+      } else {
+        badge.innerText = "📚 Necesita Repaso";
+        badge.className = "mt-3 inline-block px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider bg-rose-300 text-rose-950 shadow";
+      }
+
+      // Preparar Resumen para Google Classroom
+      const classroomSummary = `[EVALUACIÓN EL MEDIO NATURAL]\nAlumno: ${usuario.nombre} ${usuario.apellidos}\nCurso: ${usuario.curso} | Centro: ${usuario.escuela}\nNota: ${correctCount}/${total} (${pct}%)\nTiempo: ${timeStr} | Fecha: ${dateStr}`;
+      document.getElementById('classroom-summary-preview').innerText = classroomSummary;
+
+      // Renderizar Revisión Completa
+      renderReviewList('all');
+
+      // Mostrar pantalla de resultados
+      document.getElementById('screen-quiz').classList.add('hidden');
+      document.getElementById('screen-results').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function renderReviewList(filter) {
+      filtroRevision = filter;
+      const container = document.getElementById('review-list-container');
+      container.innerHTML = '';
+
+      preguntasActivas.forEach((p, idx) => {
+        const userOpt = respuestasUsuario[p.id];
+        const isCorrect = userOpt && userOpt.correct === true;
+        const isUnanswered = userOpt === undefined;
+
+        if (filter === 'correct' && !isCorrect) return;
+        if (filter === 'incorrect' && isCorrect) return;
+
+        const correctOptObj = p.options.find(o => o.correct === true);
+
+        const card = document.createElement('div');
+        let cardBg = isCorrect ? "bg-eco-50/40 border-eco-200" : "bg-rose-50/30 border-rose-200";
+        if (isUnanswered) cardBg = "bg-amber-50/30 border-amber-200";
+
+        card.className = `p-5 rounded-2xl border-2 ${cardBg} space-y-3 pdf-page-break`;
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-400">Pregunta ${idx + 1} de 40 • ${p.category}</span>
+            <span class="px-2.5 py-1 rounded-full text-xs font-black ${isCorrect ? 'bg-eco-600 text-white' : (isUnanswered ? 'bg-amber-500 text-white' : 'bg-rose-600 text-white')}">
+              ${isCorrect ? '✓ Correcta' : (isUnanswered ? '⚠ Sin responder' : '✗ Incorrecta')}
+            </span>
+          </div>
+
+          <h4 class="font-bold text-slate-900 text-base leading-snug">${p.q}</h4>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs md:text-sm pt-1">
+            <div class="p-3 rounded-xl border ${isCorrect ? 'bg-eco-100/70 border-eco-300 text-eco-950 font-semibold' : 'bg-rose-100/70 border-rose-300 text-rose-950 font-semibold'}">
+              <span class="block text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-0.5">Tu Respuesta:</span>
+              ${userOpt ? userOpt.text : '<em>No respondiste a esta pregunta.</em>'}
+            </div>
+
+            ${!isCorrect ? `
+              <div class="p-3 rounded-xl border bg-eco-100/70 border-eco-300 text-eco-950 font-semibold">
+                <span class="block text-[10px] uppercase tracking-wider text-eco-800 font-bold mb-0.5">Respuesta Correcta:</span>
+                ${correctOptObj ? correctOptObj.text : ''}
+              </div>
+            ` : ''}
+          </div>
+
+          <div class="p-3 bg-white/80 rounded-xl border border-slate-200 text-xs text-slate-600 space-y-1">
+            <span class="font-bold text-eco-800 block flex items-center gap-1">
+              💡 Explicación Pedagógica:
+            </span>
+            <p>${p.exp}</p>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    function filterReview(type) {
+      const btnAll = document.getElementById('filter-btn-all');
+      const btnCorrect = document.getElementById('filter-btn-correct');
+      const btnIncorrect = document.getElementById('filter-btn-incorrect');
+
+      const activeCls = "bg-eco-700 text-white shadow-sm";
+      const inactiveCls = "text-slate-600 hover:text-slate-900";
+
+      btnAll.className = `px-3 py-1.5 rounded-lg text-xs font-bold ${type === 'all' ? activeCls : inactiveCls}`;
+      btnCorrect.className = `px-3 py-1.5 rounded-lg text-xs font-bold ${type === 'correct' ? activeCls : inactiveCls}`;
+      btnIncorrect.className = `px-3 py-1.5 rounded-lg text-xs font-bold ${type === 'incorrect' ? activeCls : inactiveCls}`;
+
+      renderReviewList(type);
+    }
+
+    /* ==========================================================================
+       EXPORTACIÓN PDF E INTEGRACIÓN GOOGLE CLASSROOM
+       ========================================================================== */
+    function downloadPDFReport() {
+      const element = document.getElementById('reporte-pdf-container');
+      const opt = {
+        margin:       [0.3, 0.3, 0.3, 0.3],
+        filename:     `Informe_El_Medio_Natural_${usuario.nombre}_${usuario.apellidos}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true, logging: false },
+        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+      };
+
+      html2pdf().set(opt).from(element).save();
+    }
+
+    function openClassroomModal() {
+      document.getElementById('modal-classroom').classList.remove('hidden');
+    }
+
+    function closeClassroomModal() {
+      document.getElementById('modal-classroom').classList.add('hidden');
+    }
+
+    function copyClassroomSummary() {
+      const summaryText = document.getElementById('classroom-summary-preview').innerText;
+      
+      // Copiar al portapapeles mediante execCommand para mayor compatibilidad
+      const tempTextArea = document.createElement('textarea');
+      tempTextArea.value = summaryText;
+      document.body.appendChild(tempTextArea);
+      tempTextArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempTextArea);
+
+      const btnText = document.getElementById('copy-btn-text');
+      btnText.innerText = "¡Copiado con Éxito!";
+      setTimeout(() => {
+        btnText.innerText = "Copiar Resumen al Portapapeles";
+      }, 2500);
+    }
+
+    function restartQuiz() {
+      document.getElementById('screen-results').classList.add('hidden');
+      document.getElementById('screen-login').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
