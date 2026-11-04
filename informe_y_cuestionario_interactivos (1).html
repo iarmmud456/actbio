@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Evaluación: El Sistema Tierra y la Atmósfera</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- jsPDF CDN para exportación nativa a PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    @media print {
+      .no-print { display: none !important; }
+      .print-only { display: block !important; }
+      body { background-color: white !important; color: black !important; }
+      .card-box { border: 1px solid #ccc !important; box-shadow: none !important; }
+    }
+    .print-only { display: none; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col relative selection:bg-teal-500 selection:text-white">
+
+  <!-- MODAL DE CONFIRMACIÓN DE FINALIZACIÓN -->
+  <div id="finish-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+      <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+        <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        ¿Finalizar Evaluación?
+      </h3>
+      <p id="finish-modal-msg" class="text-sm text-slate-600 leading-relaxed">
+        Vas a dar por terminada la prueba para calcular tu informe final.
+      </p>
+      <div class="flex gap-3 pt-2">
+        <button onclick="closeFinishModal()" class="flex-1 py-2.5 border border-slate-300 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-100 transition">
+          Volver y revisar
+        </button>
+        <button onclick="confirmFinishQuiz()" class="flex-1 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-semibold transition shadow">
+          Sí, Finalizar Evaluación
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Encabezado Principal (Limpio de elementos de compartir) -->
+  <header class="bg-teal-800 text-white shadow-md no-print border-b border-teal-900">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center gap-3">
+      <div class="flex items-center space-x-3">
+        <div class="p-2.5 bg-teal-900 rounded-xl border border-teal-700">
+          <svg class="w-6 h-6 text-teal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 002 2h1.5a2.5 2.5 0 002.5-2.5V11a2 2 0 012-2h1.055M11 20.055V18a2 2 0 012-2h2.945M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-lg sm:text-xl font-extrabold tracking-tight leading-tight">Evaluación de Ciencias de la Tierra</h1>
+          <p class="text-xs text-teal-200">El Sistema Tierra, la Atmósfera y los Fenómenos Atmosféricos</p>
+        </div>
+      </div>
+      <div id="session-badge" class="hidden text-xs bg-teal-900 border border-teal-700 px-3 py-1.5 rounded-full font-medium text-teal-200">
+        Sesión Aleatoria Activa
+      </div>
+    </div>
+  </header>
+
+  <!-- Contenido Principal -->
+  <main class="flex-grow max-w-5xl w-full mx-auto p-4 sm:p-6">
+
+    <!-- PANTALLA 1: REGISTRO / IDENTIFICACIÓN DEL ALUMNO -->
+    <section id="step-setup" class="max-w-xl mx-auto bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8 mt-4">
+
+      <div class="text-center mb-6">
+        <div class="inline-flex p-3 bg-teal-50 text-teal-700 rounded-2xl mb-3 border border-teal-100">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+          </svg>
+        </div>
+        <h2 class="text-2xl font-bold text-slate-900">Identificación del Estudiante</h2>
+        <p class="text-sm text-slate-500 mt-1">Ingresa tus datos para dar comienzo al cuestionario (15 preguntas aleatorias).</p>
+      </div>
+
+      <form id="form-student" onsubmit="startQuiz(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Nombre Completo del Alumno/a *</label>
+          <input type="text" id="student-name" required placeholder="Ej. Ana Belén Gómez"
+            class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-slate-800 transition">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Curso / Grupo *</label>
+            <input type="text" id="student-class" required placeholder="Ej. 1º ESO B"
+              class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-slate-800 transition">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Centro Educativo</label>
+            <input type="text" id="student-school" placeholder="Ej. IES Ciencias"
+              class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-slate-800 transition">
+          </div>
+        </div>
+
+        <div class="p-4 bg-teal-50/60 border border-teal-200 rounded-xl text-xs text-teal-900 space-y-1.5">
+          <p class="font-bold flex items-center gap-1.5 text-teal-800">
+            <svg class="w-4 h-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            Características de la prueba:
+          </p>
+          <ul class="list-disc list-inside space-y-1 text-teal-800">
+            <li><strong>15 preguntas de opción múltiple</strong> basadas únicamente en el documento de estudio.</li>
+            <li><strong>Orden aleatorio</strong> tanto de las preguntas como de las 4 alternativas en cada sesión.</li>
+            <li><strong>Informe Final descargable en PDF</strong> con tu nota sobre 10 y justificaciones de cada ítem.</li>
+          </ul>
+        </div>
+
+        <button type="submit"
+          class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3.5 px-6 rounded-xl transition shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+          <span>Comenzar Evaluación</span>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+          </svg>
+        </button>
+      </form>
+    </section>
+
+    <!-- PANTALLA 2: INTERFAZ DEL CUESTIONARIO -->
+    <section id="step-quiz" class="hidden max-w-3xl mx-auto space-y-6">
+      <!-- Barra superior de estado -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Pregunta</span>
+          <span id="quiz-progress-text" class="px-3 py-1 bg-teal-100 text-teal-800 font-bold rounded-full text-sm">1 / 15</span>
+        </div>
+        <div class="flex items-center gap-4 text-xs text-slate-600">
+          <div class="flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>Tiempo: <strong id="quiz-timer" class="text-slate-800 font-bold">00:00</strong></span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+            </svg>
+            <span id="quiz-student-display" class="font-medium text-slate-800">---</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Barra de Progreso Visual -->
+      <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+        <div id="quiz-progress-bar" class="bg-teal-600 h-2 transition-all duration-300" style="width: 6.66%;"></div>
+      </div>
+
+      <!-- Tarjeta de Pregunta -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8 space-y-6">
+        <div>
+          <span id="question-tag" class="inline-block px-2.5 py-1 text-xs font-semibold bg-slate-100 text-slate-600 rounded mb-2">Tema: El Sistema Tierra</span>
+          <h3 id="question-title" class="text-lg sm:text-xl font-bold text-slate-900 leading-snug">
+            Cargando pregunta...
+          </h3>
+        </div>
+
+        <!-- Opciones de respuesta -->
+        <div id="options-container" class="space-y-3">
+          <!-- Inyectado dinámicamente -->
+        </div>
+
+        <!-- Mensaje de advertencia de selección -->
+        <div id="unselected-warning" class="hidden p-3 bg-rose-50 border border-rose-200 rounded-lg text-xs text-rose-700 font-semibold flex items-center gap-2">
+          <svg class="w-4 h-4 text-rose-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+          <span>Selecciona una de las 4 opciones antes de avanzar a la siguiente pregunta.</span>
+        </div>
+
+        <!-- Pista desplegable -->
+        <div class="pt-2 border-t border-slate-100">
+          <button type="button" onclick="toggleHint()" class="text-xs font-semibold text-teal-700 hover:text-teal-800 flex items-center gap-1 focus:outline-none">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+            </svg>
+            <span id="hint-btn-text">Ver pista metodológica</span>
+          </button>
+          <div id="hint-box" class="hidden mt-2 p-3 bg-teal-50 border border-teal-200 rounded-lg text-xs text-teal-900">
+            <span id="hint-text">Pista no disponible</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botones de Navegación -->
+      <div class="flex justify-between items-center pt-2">
+        <button id="btn-prev" onclick="prevQuestion()" disabled
+          class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-medium text-sm hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          <span>Anterior</span>
+        </button>
+
+        <span class="text-xs text-slate-500 font-medium">Respondidas: <strong id="answered-count" class="text-slate-800 font-bold">0</strong>/15</span>
+
+        <button id="btn-next" onclick="nextQuestion()"
+          class="px-6 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-semibold text-sm transition shadow flex items-center gap-2">
+          <span id="btn-next-text">Siguiente</span>
+          <svg id="btn-next-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- PANTALLA 3: RESULTADOS E INFORME FINAL -->
+    <section id="step-results" class="hidden space-y-8">
+      
+      <!-- Ficha de Calificación Global -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8 card-box">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-6 pb-6 border-b border-slate-200">
+          <div class="space-y-2 text-center md:text-left">
+            <span class="inline-block px-3 py-1 bg-teal-100 text-teal-800 text-xs font-bold rounded-full uppercase tracking-wider">
+              Informe Final de Evaluación
+            </span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Resultados Obtenidos</h2>
+            <div class="text-xs text-slate-600 space-y-1">
+              <p>Alumno/a: <strong id="res-student-name" class="text-slate-900 font-bold">---</strong></p>
+              <p>Curso/Grupo: <span id="res-student-class" class="font-semibold text-slate-800">---</span></p>
+              <p>Tiempo empleado: <span id="res-student-time" class="font-semibold text-slate-800">---</span></p>
+            </div>
+          </div>
+
+          <!-- Nota Numérica -->
+          <div class="flex flex-col items-center justify-center p-6 bg-slate-50 rounded-2xl border border-slate-200 min-w-[210px]">
+            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Calificación final</span>
+            <div class="text-4xl sm:text-5xl font-black text-teal-700 my-1">
+              <span id="score-grade">0.0</span><span class="text-xl text-slate-400 font-normal">/10</span>
+            </div>
+            <span id="score-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
+              APROBADO
+            </span>
+            <span class="text-xs text-slate-500 mt-2">Aciertos: <strong id="score-hits" class="text-slate-800">0</strong> de 15</span>
+          </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="mt-6 flex flex-wrap justify-end gap-3 no-print">
+          <button onclick="downloadPDF()"
+            class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-sm font-bold rounded-xl transition shadow flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <span>Descargar Informe PDF</span>
+          </button>
+
+          <button onclick="window.print()"
+            class="px-5 py-2.5 bg-slate-800 hover:bg-slate-900 text-white text-sm font-semibold rounded-xl transition shadow flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+            </svg>
+            <span>Imprimir vista</span>
+          </button>
+
+          <button onclick="restartQuiz()"
+            class="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-xl transition shadow flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+            <span>Nueva Sesión Aleatoria</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Desglose Detallado de Respuestas -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8 card-box space-y-6">
+        <h3 class="text-xl font-bold text-slate-900 flex items-center gap-2 border-b border-slate-200 pb-3">
+          <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span>Desglose Completo de Preguntas y Justificaciones</span>
+        </h3>
+
+        <div id="results-breakdown-container" class="space-y-6">
+          <!-- Inyectado dinámicamente -->
+        </div>
+      </div>
+
+      <!-- Espacio para firma en PDF impreso -->
+      <div class="print-only pt-12 mt-12 border-t border-slate-300">
+        <div class="flex justify-between items-center text-xs text-slate-600">
+          <div class="text-center w-48">
+            <div class="border-b border-slate-400 mb-2 h-12"></div>
+            <p>Firma del Alumno/a</p>
+          </div>
+          <div class="text-center w-48">
+            <div class="border-b border-slate-400 mb-2 h-12"></div>
+            <p>Firma y Sello del Profesor/a</p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Pie de página -->
+  <footer class="bg-slate-900 text-slate-400 py-4 mt-auto text-xs no-print">
+    <div class="max-w-5xl mx-auto px-4 text-center">
+      <p>© Evaluación Académica: El Sistema Tierra y la Atmósfera — Basado estrictamente en los contenidos del documento oficial.</p>
+    </div>
+  </footer>
+
+  <!-- SCRIPT LÓGICO COMPLETO -->
+  <script>
+    // 15 PREGUNTAS BASADAS EXCLUSIVAMENTE EN EL TEXTO ADJUNTO
+    const MASTER_QUESTIONS = [
+      {
+        id: 1,
+        tag: "El sistema Tierra",
+        question: "¿Cuál de los siguientes subsistemas terrestres se define como el depósito de hielo del planeta y se puede considerar un subsistema de la hidrosfera?",
+        options: [
+          { text: "Criosfera", correct: true, rationale: "Según el documento, la criosfera es el depósito de hielo del planeta (hielos polares y glaciares) y se considera un subsistema de la hidrosfera." },
+          { text: "Litosfera", correct: false, rationale: "La litosfera contiene componentes minerales y rocosos de la corteza y el manto superior." },
+          { text: "Geosfera", correct: false, rationale: "La geosfera engloba toda la parte sólida del planeta (corteza, manto y núcleo)." },
+          { text: "Biosfera", correct: false, rationale: "La biosfera es la delgada capa de la superficie donde se desarrolla la vida." }
+        ],
+        hint: "Es la capa formada por los hielos polares y glaciares del planeta."
+      },
+      {
+        id: 2,
+        tag: "La geosfera: Corteza",
+        question: "¿Cuáles son las características principales de la corteza oceánica descritas en el documento?",
+        options: [
+          { text: "Forma los fondos marinos, tiene entre 6-10 km de espesor y contiene basalto.", correct: true, rationale: "El documento indica expresamente que la corteza oceánica forma los fondos marinos, mide de 6 a 10 km de espesor y contiene basalto." },
+          { text: "Forma los continentes, tiene entre 10-70 km de espesor y contiene granito.", correct: false, rationale: "Esta descripción corresponde a la corteza continental." },
+          { text: "Es una capa intermedia sólida de 2 900 km de espesor con presiones elevadas.", correct: false, rationale: "Esta cifra corresponde al manto terrestre." },
+          { text: "Es una capa fluida y móvil compuesta por hierro y níquel.", correct: false, rationale: "Esta descripción corresponde al núcleo externo." }
+        ],
+        hint: "Recuerda el tipo de roca volcánica (basalto) y su extensión en los fondos marinos."
+      },
+      {
+        id: 3,
+        tag: "La geosfera: Núcleo",
+        question: "¿Por qué razón el núcleo interno de la Tierra se encuentra en estado sólido a pesar de alcanzar temperaturas altísimas?",
+        options: [
+          { text: "Debido a la elevada presión a la que está sometido.", correct: true, rationale: "En el esquema del núcleo se especifica literalmente que el núcleo interno es sólido debido a la elevada presión." },
+          { text: "Porque está compuesto únicamente por granito rígido.", correct: false, rationale: "El granito forma parte de la corteza continental, no del núcleo." },
+          { text: "Debido al rápido enfriamiento provocado por el agua oceánica.", correct: false, rationale: "El agua marina no influye en el estado físico del núcleo profundo." },
+          { text: "Porque carece por completo de minerales metálicos densos.", correct: false, rationale: "El núcleo está formado fundamentalmente por hierro y níquel." }
+        ],
+        hint: "La enorme presión del interior terrestre impide que sus materiales se fundan."
+      },
+      {
+        id: 4,
+        tag: "La atmósfera: Origen",
+        question: "¿Qué organismos hicieron su aparición en la Tierra primitiva provocando que aumentara el oxígeno y disminuyera el dióxido de carbono?",
+        options: [
+          { text: "Los primeros organismos fotosintéticos (cianobacterias y algas).", correct: true, rationale: "El texto explica que con los primeros organismos fotosintéticos (cianobacterias y algas), la proporción de CO2 disminuyó y aumentó la de O2." },
+          { text: "Los animales invertebrados de la litosfera.", correct: false, rationale: "Los animales consumen oxígeno en su respiración y no liberaron O2 a la atmósfera primitiva." },
+          { text: "Las bacterias anaerobias emisoras de metano.", correct: false, rationale: "Fueron los seres fotosintéticos los responsables de enriquecer el aire en oxígeno." },
+          { text: "Los hongos y descomponedores del suelo.", correct: false, rationale: "Los hongos son heterótrofos y no realizan fotosíntesis." }
+        ],
+        hint: "Fueron los microorganismos fotosintéticos pioneros citados en el texto."
+      },
+      {
+        id: 5,
+        tag: "La atmósfera: Composición",
+        question: "Según el texto, ¿cuál es la composición exacta del aire en la atmósfera terrestre?",
+        options: [
+          { text: "78% de nitrógeno, 21% de oxígeno, 0,9% de argón y 0,1% de otros gases.", correct: true, rationale: "El documento especifica exactamente esta proporción cuantitativa para el aire seco." },
+          { text: "78% de oxígeno, 21% de nitrógeno, 0,9% de dióxido de carbono y 0,1% de argón.", correct: false, rationale: "Invierte erróneamente el porcentaje del nitrógeno y del oxígeno." },
+          { text: "50% de nitrógeno, 40% de oxígeno, 8% de vapor de agua y 2% de ozono.", correct: false, rationale: "Valores erróneos; el nitrógeno representa casi 4/5 partes del total." },
+          { text: "90% de nitrógeno, 9% de oxígeno y 1% de dióxido de carbono.", correct: false, rationale: "No coincide con los datos oficiales tabulados en el texto." }
+        ],
+        hint: "El nitrógeno es el gas más abundante (78%) seguido del oxígeno (21%)."
+      },
+      {
+        id: 6,
+        tag: "Capas de la atmósfera: Troposfera",
+        question: "¿Qué características identifican a la troposfera en el esquema atmosférico?",
+        options: [
+          { text: "Llega hasta los 12 km de altitud, contiene el 80% del aire y en ella ocurren los fenómenos atmosféricos.", correct: true, rationale: "El texto señala que la troposfera alcanza 12 km, aloja la vida, los fenómenos meteorológicos y el 80% de la masa de aire." },
+          { text: "Se extiende de los 12 a los 50 km y contiene la capa de ozono.", correct: false, rationale: "Esta definición corresponde a la estratosfera." },
+          { text: "Llega hasta los 85 km y en ella se desintegran los meteoros.", correct: false, rationale: "Esta descripción corresponde a la mesosfera." },
+          { text: "Se sitúa entre los 85 y los 690 km alcanzando temperaturas de 1000 °C.", correct: false, rationale: "Esta descripción corresponde a la termosfera." }
+        ],
+        hint: "Es la capa más cercana a la superficie donde se forma la lluvia y el viento."
+      },
+      {
+        id: 7,
+        tag: "Capas de la atmósfera: Estratosfera",
+        question: "¿Qué estructura fundamental se encuentra en la estratosfera (12 a 50 km) y cuál es su función?",
+        options: [
+          { text: "La capa de ozono, que absorbe la radiación UV.", correct: true, rationale: "El texto indica que en la estratosfera se encuentra la capa de ozono, responsable de absorber la radiación ultravioleta." },
+          { text: "Las auroras polares, que filtran meteoros gigantes.", correct: false, rationale: "Las auroras polares se originan en la termosfera." },
+          { text: "Los satélites artificiales, que orbitan el planeta.", correct: false, rationale: "Los satélites artificiales se encuentran principalmente en la exosfera." },
+          { text: "Los frentes fríos que producen las precipitaciones.", correct: false, rationale: "Los frentes y lluvias suceden en la troposfera." }
+        ],
+        hint: "Filtra la radiación ultravioleta perjudicial procedente del Sol."
+      },
+      {
+        id: 8,
+        tag: "Capas de la atmósfera: Mesosfera",
+        question: "¿En qué capa atmosférica (50 a 85 km de altitud) se desintegran los meteoros de pequeño tamaño convirtiéndose en estrellas fugaces?",
+        options: [
+          { text: "Mesosfera", correct: true, rationale: "El documento indica expresamente que en la mesosfera se desintegran los meteoros de pequeño tamaño dando lugar a estrellas fugaces." },
+          { text: "Troposfera", correct: false, rationale: "La troposfera contiene las nubes y los vuelos comerciales de aviación." },
+          { text: "Estratosfera", correct: false, rationale: "En la estratosfera se sitúa la capa de ozono." },
+          { text: "Exosfera", correct: false, rationale: "La exosfera apenas posee gases y limita con el espacio exterior." }
+        ],
+        hint: "Es la capa intermedia (prefijo 'meso-') situada entre 50 y 85 km."
+      },
+      {
+        id: 9,
+        tag: "Capas de la atmósfera: Termosfera",
+        question: "¿En qué capa de la atmósfera la temperatura aumenta hasta los 1000 °C y se originan las auroras polares?",
+        options: [
+          { text: "Termosfera", correct: true, rationale: "El documento expone que la termosfera (85 a 690 km) filtra radiación solar de elevada energía, origina las auroras polares y su temperatura alcanza 1000 °C." },
+          { text: "Exosfera", correct: false, rationale: "La exosfera se sitúa por encima de los 690 km." },
+          { text: "Mesosfera", correct: false, rationale: "La mesosfera se sitúa entre los 50 y los 85 km." },
+          { text: "Estratosfera", correct: false, rationale: "La estratosfera absorbe radiación UV mediante el ozono." }
+        ],
+        hint: "Su nombre alude a elevadas temperaturas (hasta 1000 °C)."
+      },
+      {
+        id: 10,
+        tag: "Fenómenos atmosféricos: Viento",
+        question: "Respecto a la masa de aire y la temperatura en el viento, ¿cómo se comporta el aire caliente en comparación con el frío?",
+        options: [
+          { text: "El aire caliente es menos denso y asciende; el frío es más denso y desciende.", correct: true, rationale: "El texto afirma literalmente: 'Si el aire es caliente, es menos denso y asciende mientras que si es frío, es más denso y desciende'." },
+          { text: "El aire caliente es más denso y desciende al suelo.", correct: false, rationale: "Afirmación errónea; al calentarse el aire se expande y disminuye su densidad." },
+          { text: "Ambos aires tienen idéntica densidad y no cambian de altura.", correct: false, rationale: "Las diferencias de densidad originan los desplazamientos verticales y horizontales." },
+          { text: "El aire frío asciende a las capas altas produciendo anticiclones.", correct: false, rationale: "El aire frío desciende por ser más denso." }
+        ],
+        hint: "El aire caliente pierde densidad y tiende a subir."
+      },
+      {
+        id: 11,
+        tag: "Presión atmosférica: Ciclones y Anticiclones",
+        question: "¿Qué sucede en los anticiclones para que se genere tiempo estable?",
+        options: [
+          { text: "El aire frío más denso desciende y genera una zona con altas presiones.", correct: true, rationale: "El documento detalla que en los anticiclones el aire frío desciende produciendo altas presiones y tiempo estable." },
+          { text: "El aire caliente menos denso asciende y genera bajas presiones con nubes.", correct: false, rationale: "Esta dinámica describe a los ciclones o borrascas." },
+          { text: "El viento deja de circular por completo en la atmósfera.", correct: false, rationale: "Los anticiclones implican estabilidad pero no detención global del aire." },
+          { text: "Las gotas de rocío se congelan produciendo niebla.", correct: false, rationale: "La congelación del rocío produce escarcha." }
+        ],
+        hint: "Asocia los anticiclones con la bajada de aire frío y las altas presiones."
+      },
+      {
+        id: 12,
+        tag: "Condensación: Rocío",
+        question: "¿Cómo se denomina el fenómeno cuando la condensación del vapor de agua ocurre sobre las hojas de las plantas?",
+        options: [
+          { text: "Rocío", correct: true, rationale: "El documento dice textualmente: 'Si la condensación de vapor de agua ocurre sobre las hojas de las plantas se forma el rocío'." },
+          { text: "Niebla", correct: false, rationale: "La niebla es la condensación que se origina cerca del suelo en suspensión." },
+          { text: "Escarcha", correct: false, rationale: "La escarcha es la congelación nocturna de las gotas de rocío." },
+          { text: "Granizo", correct: false, rationale: "El granizo es una precipitación sólida en nubes de tormenta." }
+        ],
+        hint: "Son las pequeñas gotas que aparecen sobre la vegetación al enfriarse la noche."
+      },
+      {
+        id: 13,
+        tag: "Condensación: Escarcha",
+        question: "¿Bajo qué circunstancia específica se produce la escarcha?",
+        options: [
+          { text: "Cuando las gotas de rocío se congelan durante la noche.", correct: true, rationale: "El documento especifica: 'Si las gotas de rocío se congelan durante la noche aparece la escarcha'." },
+          { text: "Cuando la niebla asciende a la estratosfera.", correct: false, rationale: "La niebla es un fenómeno propio del nivel del suelo en la troposfera." },
+          { text: "Cuando el aire caliente choca con un frente frío sin humedad.", correct: false, rationale: "Los frentes provocan precipitaciones variables." },
+          { text: "Cuando se congelan las nubes de la mesosfera.", correct: false, rationale: "La escarcha ocurre en la superficie sobre las plantas." }
+        ],
+        hint: "Ocurre cuando el rocío formado previamente se congela."
+      },
+      {
+        id: 14,
+        tag: "Fenómenos atmosféricos: Frentes",
+        question: "¿Qué ocurre en un frente frío y qué tipo de precipitaciones origina?",
+        options: [
+          { text: "El aire frío se introduce debajo del caliente y produce fuertes precipitaciones.", correct: true, rationale: "En la ilustración del frente frío se indica que el aire frío se introduce debajo del caliente y produce fuertes precipitaciones." },
+          { text: "El aire caliente choca con el frío, asciende y genera precipitaciones débiles.", correct: false, rationale: "Esa dinámica corresponde exactamente al frente cálido." },
+          { text: "El aire frío asciende creando altas presiones sin lluvias.", correct: false, rationale: "El aire frío es más denso y desciende." },
+          { text: "El aire se evapora hacia la termosfera provocando tormentas.", correct: false, rationale: "Los frentes ocurren exclusivamente en la troposfera." }
+        ],
+        hint: "La masa fría empuja desde abajo a la masa cálida de forma brusca."
+      },
+      {
+        id: 15,
+        tag: "Precipitaciones: Granizo",
+        question: "¿En qué condiciones las precipitaciones caen en forma de granizo?",
+        options: [
+          { text: "Cuando las gotas de agua se forman en el interior de nubes de tormenta y se congelan.", correct: true, rationale: "El texto afirma que si las gotas de agua se forman en el interior de nubes de tormenta y se congelan, caen en forma de granizo." },
+          { text: "Cuando la temperatura atmosférica es inferior a 0 °C y cae en forma de copos.", correct: false, rationale: "Esta descripción corresponde a la nieve." },
+          { text: "Cuando la condensación del vapor se origina cerca del suelo.", correct: false, rationale: "La condensación cercana al suelo forma la niebla." },
+          { text: "Cuando cae precipitación únicamente en estado líquido.", correct: false, rationale: "La precipitación en estado líquido es la lluvia." }
+        ],
+        hint: "Se forman congelándose rápidamente dentro de nubes de tormenta."
+      }
+    ];
+
+    // ESTADO GLOBAL DE LA APLICACIÓN
+    let currentSessionQuestions = [];
+    let userAnswers = {};
+    let currentQuestionIdx = 0;
+    let timerSeconds = 0;
+    let timerInterval = null;
+    let studentData = { name: '', class: '', school: '' };
+
+    // ALGORITMO FISHER-YATES DE MEZCLA
+    function shuffle(array) {
+      const arr = JSON.parse(JSON.stringify(array));
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    // INICIAR EL CUESTIONARIO
+    function startQuiz(event) {
+      event.preventDefault();
+
+      const name = document.getElementById('student-name').value.trim();
+      const studentClass = document.getElementById('student-class').value.trim();
+      const school = document.getElementById('student-school').value.trim() || 'Centro No Especificado';
+
+      if (!name || !studentClass) return;
+
+      studentData = { name, class: studentClass, school };
+
+      // 1. Aleatorizar las 15 preguntas
+      let shuffledQ = shuffle(MASTER_QUESTIONS);
+
+      // 2. Aleatorizar las 4 opciones de cada pregunta
+      currentSessionQuestions = shuffledQ.map(q => {
+        return {
+          ...q,
+          options: shuffle(q.options)
+        };
+      });
+
+      userAnswers = {};
+      currentQuestionIdx = 0;
+      timerSeconds = 0;
+
+      // Actualizar Interfaz
+      document.getElementById('quiz-student-display').textContent = `${name} (${studentClass})`;
+      document.getElementById('step-setup').classList.add('hidden');
+      document.getElementById('step-quiz').classList.remove('hidden');
+      document.getElementById('session-badge').classList.remove('hidden');
+
+      // Iniciar Temporizador
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        timerSeconds++;
+        const mins = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
+        const secs = String(timerSeconds % 60).padStart(2, '0');
+        document.getElementById('quiz-timer').textContent = `${mins}:${secs}`;
+      }, 1000);
+
+      renderCurrentQuestion();
+    }
+
+    // RENDERIZAR LA PREGUNTA ACTUAL
+    function renderCurrentQuestion() {
+      const q = currentSessionQuestions[currentQuestionIdx];
+      const total = currentSessionQuestions.length;
+
+      document.getElementById('unselected-warning').classList.add('hidden');
+      document.getElementById('quiz-progress-text').textContent = `${currentQuestionIdx + 1} / ${total}`;
+      const pct = ((currentQuestionIdx + 1) / total) * 100;
+      document.getElementById('quiz-progress-bar').style.width = `${pct}%`;
+
+      document.getElementById('question-tag').textContent = `Tema: ${q.tag}`;
+      document.getElementById('question-title').textContent = `${currentQuestionIdx + 1}. ${q.question}`;
+
+      document.getElementById('hint-box').classList.add('hidden');
+      document.getElementById('hint-btn-text').textContent = "Ver pista metodológica";
+      document.getElementById('hint-text').textContent = q.hint || "Pista no disponible.";
+
+      const container = document.getElementById('options-container');
+      container.innerHTML = '';
+
+      q.options.forEach((opt, idx) => {
+        const isSelected = userAnswers[currentQuestionIdx] === idx;
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.onclick = () => selectOption(idx);
+        btn.className = `w-full text-left p-4 rounded-xl border text-sm transition flex items-start gap-3 ${
+          isSelected
+            ? 'bg-teal-50 border-teal-600 text-teal-900 font-semibold ring-2 ring-teal-500/20 shadow-sm'
+            : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
+        }`;
+
+        const letter = String.fromCharCode(65 + idx);
+
+        btn.innerHTML = `
+          <span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold shrink-0 ${
+            isSelected ? 'bg-teal-600 text-white' : 'bg-slate-100 text-slate-600'
+          }">${letter}</span>
+          <span class="flex-grow mt-0.5">${escapeHtml(opt.text)}</span>
+        `;
+        container.appendChild(btn);
+      });
+
+      document.getElementById('btn-prev').disabled = currentQuestionIdx === 0;
+      document.getElementById('answered-count').textContent = Object.keys(userAnswers).length;
+
+      const btnNextText = document.getElementById('btn-next-text');
+      if (currentQuestionIdx === total - 1) {
+        btnNextText.textContent = "Finalizar Evaluación";
+      } else {
+        btnNextText.textContent = "Siguiente";
+      }
+    }
+
+    function selectOption(optIdx) {
+      userAnswers[currentQuestionIdx] = optIdx;
+      document.getElementById('unselected-warning').classList.add('hidden');
+      renderCurrentQuestion();
+    }
+
+    function toggleHint() {
+      const hintBox = document.getElementById('hint-box');
+      const isHidden = hintBox.classList.contains('hidden');
+      if (isHidden) {
+        hintBox.classList.remove('hidden');
+        document.getElementById('hint-btn-text').textContent = "Ocultar pista";
+      } else {
+        hintBox.classList.add('hidden');
+        document.getElementById('hint-btn-text').textContent = "Ver pista metodológica";
+      }
+    }
+
+    function prevQuestion() {
+      if (currentQuestionIdx > 0) {
+        currentQuestionIdx--;
+        renderCurrentQuestion();
+      }
+    }
+
+    function nextQuestion() {
+      const total = currentSessionQuestions.length;
+
+      if (userAnswers[currentQuestionIdx] === undefined) {
+        document.getElementById('unselected-warning').classList.remove('hidden');
+        return;
+      }
+
+      if (currentQuestionIdx < total - 1) {
+        currentQuestionIdx++;
+        renderCurrentQuestion();
+      } else {
+        openFinishModal();
+      }
+    }
+
+    // MODAL DE CONFIRMACIÓN AL TERMINAR
+    function openFinishModal() {
+      const total = currentSessionQuestions.length;
+      const answered = Object.keys(userAnswers).length;
+      const unans = total - answered;
+
+      const msg = document.getElementById('finish-modal-msg');
+      if (unans > 0) {
+        msg.innerHTML = `Tienes <strong>${unans} pregunta(s) sin responder</strong> de las 15. ¿Deseas finalizar y obtener tu calificación de todos modos?`;
+      } else {
+        msg.innerHTML = `Has respondido las 15 preguntas correctamente. ¿Deseas finalizar y emitir tu informe final?`;
+      }
+
+      const modal = document.getElementById('finish-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeFinishModal() {
+      const modal = document.getElementById('finish-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function confirmFinishQuiz() {
+      closeFinishModal();
+      finishQuiz();
+    }
+
+    function finishQuiz() {
+      if (timerInterval) clearInterval(timerInterval);
+
+      let correctHits = 0;
+      currentSessionQuestions.forEach((q, idx) => {
+        const selectedIdx = userAnswers[idx];
+        if (selectedIdx !== undefined && q.options[selectedIdx].correct) {
+          correctHits++;
+        }
+      });
+
+      const total = currentSessionQuestions.length;
+      const scoreScale10 = ((correctHits / total) * 10).toFixed(1);
+
+      document.getElementById('res-student-name').textContent = studentData.name;
+      document.getElementById('res-student-class').textContent = `${studentData.class} (${studentData.school})`;
+      
+      const mins = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
+      const secs = String(timerSeconds % 60).padStart(2, '0');
+      document.getElementById('res-student-time').textContent = `${mins}:${secs} min`;
+
+      document.getElementById('score-hits').textContent = correctHits;
+      document.getElementById('score-grade').textContent = scoreScale10;
+
+      const badge = document.getElementById('score-badge');
+      if (scoreScale10 >= 8.5) {
+        badge.textContent = "SOBRESALIENTE";
+        badge.className = "px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800";
+      } else if (scoreScale10 >= 7.0) {
+        badge.textContent = "NOTABLE";
+        badge.className = "px-3 py-1 rounded-full text-xs font-bold bg-teal-100 text-teal-800";
+      } else if (scoreScale10 >= 5.0) {
+        badge.textContent = "APROBADO";
+        badge.className = "px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800";
+      } else {
+        badge.textContent = "NECESITA MEJORAR";
+        badge.className = "px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800";
+      }
+
+      renderBreakdown();
+
+      document.getElementById('step-quiz').classList.add('hidden');
+      document.getElementById('step-results').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // DESGLOSE COMPLETO CON JUSTIFICACIONES PEDAGÓGICAS
+    function renderBreakdown() {
+      const container = document.getElementById('results-breakdown-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      currentSessionQuestions.forEach((q, idx) => {
+        const selectedOptIdx = userAnswers[idx];
+        const hasAns = selectedOptIdx !== undefined;
+        const isHit = hasAns && q.options[selectedOptIdx].correct;
+
+        const card = document.createElement('div');
+        card.className = `p-4 sm:p-5 rounded-xl border ${
+          isHit ? 'bg-emerald-50/50 border-emerald-200' : 'bg-rose-50/50 border-rose-200'
+        }`;
+
+        let optionsHtml = '';
+        q.options.forEach((opt, oIdx) => {
+          const letter = String.fromCharCode(65 + oIdx);
+          let optStyle = 'text-slate-600 bg-white border-slate-200';
+          let icon = '';
+
+          if (opt.correct) {
+            optStyle = 'text-emerald-900 bg-emerald-100/80 border-emerald-300 font-semibold';
+            icon = '<span class="text-xs font-bold text-emerald-700 ml-auto">✓ Correcta</span>';
+          }
+          if (hasAns && selectedOptIdx === oIdx && !opt.correct) {
+            optStyle = 'text-rose-900 bg-rose-100 border-rose-300 font-medium';
+            icon = '<span class="text-xs font-bold text-rose-700 ml-auto">✗ Tu respuesta</span>';
+          }
+
+          optionsHtml += `
+            <div class="p-2.5 rounded-lg border text-xs sm:text-sm flex items-center gap-2 ${optStyle}">
+              <span class="font-bold w-5 h-5 flex items-center justify-center rounded-full bg-slate-200/60 text-slate-700 text-xs">${letter}</span>
+              <span class="flex-grow">${escapeHtml(opt.text)}</span>
+              ${icon}
+            </div>
+          `;
+        });
+
+        const correctOpt = q.options.find(o => o.correct);
+
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wide ${isHit ? 'text-emerald-700' : 'text-rose-700'}">
+                Pregunta ${idx + 1} (${q.tag})
+              </span>
+              <h4 class="text-sm sm:text-base font-bold text-slate-900 mt-0.5">${escapeHtml(q.question)}</h4>
+            </div>
+            <span class="px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap ${
+              isHit ? 'bg-emerald-200 text-emerald-800' : 'bg-rose-200 text-rose-800'
+            }">
+              ${isHit ? '¡Acierto!' : 'Incorrecta'}
+            </span>
+          </div>
+          <div class="space-y-2 mb-3">
+            ${optionsHtml}
+          </div>
+          <div class="p-3 bg-slate-100/90 rounded-lg text-xs text-slate-700 border border-slate-200">
+            <strong class="text-slate-900 font-semibold">Explicación del Libro:</strong> ${escapeHtml(correctOpt.rationale)}
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    // EXPORTACIÓN A PDF CON jsPDF
+    function downloadPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const pageWidth = doc.internal.pageSize.getWidth();
+      let y = 15;
+
+      // Encabezado del PDF
+      doc.setFillColor(15, 118, 110);
+      doc.rect(0, 0, pageWidth, 24, 'F');
+
+      doc.setTextColor(255, 255, 255);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(14);
+      doc.text("INFORME OFICIAL DE EVALUACIÓN ACADÉMICA", 14, 12);
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'normal');
+      doc.text("El Sistema Tierra, la Atmósfera y los Fenómenos Atmosféricos", 14, 18);
+
+      y = 32;
+
+      // Ficha Datos del Alumno (Sin campo de fecha)
+      doc.setDrawColor(200, 200, 200);
+      doc.setFillColor(248, 250, 252);
+      doc.roundedRect(14, y, pageWidth - 28, 24, 3, 3, 'FD');
+
+      doc.setTextColor(30, 41, 59);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+      doc.text("DATOS DEL ESTUDIANTE Y EVALUACIÓN", 18, y + 7);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.text(`Alumno/a: ${studentData.name}`, 18, y + 14);
+      doc.text(`Curso/Grupo: ${studentData.class}`, 18, y + 19);
+
+      const mins = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
+      const secs = String(timerSeconds % 60).padStart(2, '0');
+      doc.text(`Centro Educativo: ${studentData.school}`, 115, y + 14);
+      doc.text(`Tiempo empleado: ${mins}:${secs} min`, 115, y + 19);
+
+      let correctHits = 0;
+      currentSessionQuestions.forEach((q, idx) => {
+        const sIdx = userAnswers[idx];
+        if (sIdx !== undefined && q.options[sIdx].correct) correctHits++;
+      });
+      const score10 = ((correctHits / 15) * 10).toFixed(1);
+
+      y += 30;
+
+      // Cuadro de Calificación
+      doc.setFillColor(240, 253, 250);
+      doc.setDrawColor(13, 148, 136);
+      doc.roundedRect(14, y, pageWidth - 28, 10, 2, 2, 'FD');
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(15, 118, 110);
+      doc.text(`Calificación final: ${score10} / 10  (${correctHits} de 15 respuestas correctas)`, 18, y + 6.5);
+
+      y += 16;
+
+      // Tabla de Desglose
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(30, 41, 59);
+      doc.text("Desglose de Preguntas y Respuestas", 14, y);
+      y += 5;
+
+      doc.setFillColor(226, 232, 240);
+      doc.rect(14, y, pageWidth - 28, 7, 'F');
+      doc.setFontSize(8);
+      doc.setTextColor(15, 23, 42);
+      doc.text("#", 16, y + 5);
+      doc.text("Pregunta", 24, y + 5);
+      doc.text("Tu Respuesta", 115, y + 5);
+      doc.text("Estado", 175, y + 5);
+      y += 8;
+
+      doc.setFont('helvetica', 'normal');
+
+      currentSessionQuestions.forEach((q, idx) => {
+        if (y > pageHeight - 20) {
+          doc.addPage();
+          y = 15;
+          doc.setFillColor(226, 232, 240);
+          doc.rect(14, y, pageWidth - 28, 7, 'F');
+          doc.setFontSize(8);
+          doc.setFont('helvetica', 'bold');
+          doc.text("#", 16, y + 5);
+          doc.text("Pregunta", 24, y + 5);
+          doc.text("Tu Respuesta", 115, y + 5);
+          doc.text("Estado", 175, y + 5);
+          y += 8;
+          doc.setFont('helvetica', 'normal');
+        }
+
+        const selectedOptIdx = userAnswers[idx];
+        const hasAns = selectedOptIdx !== undefined;
+        const isHit = hasAns && q.options[selectedOptIdx].correct;
+
+        const qText = doc.splitTextToSize(`${idx + 1}. ${q.question}`, 88);
+        const ansTextStr = hasAns ? q.options[selectedOptIdx].text : "Sin responder";
+        const ansText = doc.splitTextToSize(ansTextStr, 55);
+
+        const linesNum = Math.max(qText.length, ansText.length);
+        const rowHeight = linesNum * 4 + 2;
+
+        if (idx % 2 === 1) {
+          doc.setFillColor(248, 250, 252);
+          doc.rect(14, y - 2, pageWidth - 28, rowHeight, 'F');
+        }
+
+        doc.text(String(idx + 1), 16, y + 2);
+        doc.text(qText, 24, y + 2);
+        doc.text(ansText, 115, y + 2);
+
+        if (isHit) {
+          doc.setTextColor(16, 185, 129);
+          doc.text("Correcta", 175, y + 2);
+        } else {
+          doc.setTextColor(239, 68, 68);
+          doc.text("Incorrecta", 175, y + 2);
+        }
+        doc.setTextColor(30, 41, 59);
+
+        y += rowHeight;
+      });
+
+      // Bloque de Firmas
+      if (y > pageHeight - 35) {
+        doc.addPage();
+        y = 20;
+      } else {
+        y += 12;
+      }
+
+      doc.setDrawColor(150, 150, 150);
+      doc.line(20, y + 10, 80, y + 10);
+      doc.line(130, y + 10, 190, y + 10);
+
+      doc.setFontSize(8);
+      doc.text("Firma del Alumno/a", 35, y + 15);
+      doc.text("Firma y Sello del Profesor/a", 142, y + 15);
+
+      const cleanName = studentData.name.replace(/[^a-zA-Z0-9]/g, '_');
+      doc.save(`Informe_Evaluacion_${cleanName}.pdf`);
+    }
+
+    function restartQuiz() {
+      document.getElementById('step-results').classList.add('hidden');
+      document.getElementById('step-setup').classList.remove('hidden');
+      document.getElementById('session-badge').classList.add('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+  </script>
+</body>
+</html>
