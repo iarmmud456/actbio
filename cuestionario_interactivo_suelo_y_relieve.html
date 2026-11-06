@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuestionario: El Suelo y el Modelado del Relieve</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- jsPDF Library for PDF Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body class="bg-slate-100 font-sans text-slate-800 min-h-screen flex flex-col justify-between">
+
+    <!-- Header Banner -->
+    <header class="bg-emerald-700 text-white shadow-lg">
+        <div class="max-w-4xl mx-auto px-4 py-5 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid fa-mountain-sun text-3xl text-emerald-300"></i>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold">Biología y Geología</h1>
+                    <p class="text-xs md:text-sm text-emerald-100">El Suelo y el Modelado del Relieve</p>
+                </div>
+            </div>
+            <span id="header-badge" class="hidden bg-emerald-800 text-emerald-100 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">
+                15 Preguntas
+            </span>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-4xl mx-auto px-4 py-8 flex-grow w-full">
+
+        <!-- SCREEN 1: Identification Form -->
+        <section id="screen-register" class="bg-white rounded-xl shadow-md p-6 md:p-10 border border-slate-200">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                    <i class="fa-solid fa-id-card"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">Identificación del Alumno</h2>
+                <p class="text-slate-600 text-sm mt-1">Por favor, introduce tus datos para iniciar el cuestionario de evaluación.</p>
+            </div>
+
+            <form id="form-register" onsubmit="startQuiz(event)" class="max-w-md mx-auto space-y-4">
+                <div>
+                    <label for="student-name" class="block text-sm font-medium text-slate-700 mb-1">Nombre y Apellidos <span class="text-red-500">*</span></label>
+                    <input type="text" id="student-name" required placeholder="Ej. María García López" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition">
+                </div>
+
+                <div>
+                    <label for="student-group" class="block text-sm font-medium text-slate-700 mb-1">Curso / Grupo <span class="text-red-500">*</span></label>
+                    <input type="text" id="student-group" required placeholder="Ej. 3º ESO - Grupo A" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition">
+                </div>
+
+                <div class="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-lg text-xs text-amber-800 space-y-1">
+                    <p class="font-semibold"><i class="fa-solid fa-circle-info mr-1"></i> Información importante:</p>
+                    <ul class="list-disc list-inside space-y-1 text-amber-700">
+                        <li>El cuestionario consta de 15 preguntas de opción múltiple.</li>
+                        <li>Las preguntas y opciones se ordenan aleatoriamente en cada sesión.</li>
+                        <li>Al finalizar, podrás obtener un <strong>Informe Final en PDF</strong> con tu nota y correcciones.</li>
+                    </ul>
+                </div>
+
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-lg shadow hover:shadow-md transition flex items-center justify-center space-x-2">
+                    <span>Comenzar Cuestionario</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
+        </section>
+
+        <!-- SCREEN 2: Quiz Player -->
+        <section id="screen-quiz" class="hidden bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
+            <!-- Progress & Stats Header -->
+            <div class="bg-slate-50 border-b border-slate-200 p-4 md:px-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex items-center space-x-3">
+                    <span id="quiz-student-tag" class="text-xs bg-slate-200 text-slate-700 px-2.5 py-1 rounded font-medium">
+                        Alumno: --
+                    </span>
+                    <span id="quiz-count-tag" class="text-xs bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded font-bold">
+                        Pregunta 1 de 15
+                    </span>
+                </div>
+                <!-- Progress Bar -->
+                <div class="w-full md:w-64 bg-slate-200 rounded-full h-2.5 overflow-hidden">
+                    <div id="progress-bar" class="bg-emerald-600 h-2.5 rounded-full transition-all duration-300" style="width: 6.66%;"></div>
+                </div>
+            </div>
+
+            <!-- Question Box -->
+            <div class="p-6 md:p-8">
+                <h3 id="question-text" class="text-lg md:text-xl font-bold text-slate-800 mb-6">
+                    Cargando pregunta...
+                </h3>
+
+                <!-- Answer Options -->
+                <div id="options-container" class="space-y-3 mb-8">
+                    <!-- Options populated via JS -->
+                </div>
+
+                <!-- Navigation Controls -->
+                <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                    <button id="btn-prev" onclick="prevQuestion()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-semibold transition flex items-center space-x-1 disabled:opacity-40 disabled:cursor-not-allowed">
+                        <i class="fa-solid fa-chevron-left text-xs"></i>
+                        <span>Anterior</span>
+                    </button>
+
+                    <div class="flex space-x-2">
+                        <button id="btn-next" onclick="nextQuestion()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-semibold shadow transition flex items-center space-x-2">
+                            <span>Siguiente</span>
+                            <i class="fa-solid fa-chevron-right text-xs"></i>
+                        </button>
+                        <button id="btn-submit" onclick="confirmFinish()" class="hidden px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold shadow transition flex items-center space-x-2">
+                            <i class="fa-solid fa-check-double"></i>
+                            <span>Finalizar Test</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCREEN 3: Final Results & Report -->
+        <section id="screen-results" class="hidden space-y-6">
+            <!-- Score Card -->
+            <div class="bg-white rounded-xl shadow-md p-6 md:p-8 border border-slate-200 text-center">
+                <div id="result-badge-icon" class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-3 text-4xl">
+                    <!-- Icon via JS -->
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800" id="result-title">Resultados Obtenidos</h2>
+                <p id="result-student-info" class="text-sm text-slate-500 mt-1">Alumno: -- | Curso: --</p>
+
+                <div class="my-6 py-4 bg-slate-50 rounded-xl border border-slate-200 inline-block px-8">
+                    <span class="block text-xs uppercase tracking-wider text-slate-500 font-semibold mb-1">Calificación</span>
+                    <span id="result-score-text" class="text-4xl font-extrabold text-emerald-600">0 / 15</span>
+                    <span id="result-percentage-text" class="block text-sm font-semibold text-slate-600 mt-1">(0%)</span>
+                </div>
+
+                <div id="result-message" class="text-sm text-slate-600 max-w-lg mx-auto mb-6">
+                    --
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-3">
+                    <button onclick="downloadPDFReport()" class="w-full sm:w-auto px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow transition flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-file-pdf"></i>
+                        <span>Descargar Informe PDF</span>
+                    </button>
+                    <button onclick="resetQuiz()" class="w-full sm:w-auto px-6 py-3 bg-slate-700 hover:bg-slate-800 text-white font-semibold rounded-lg shadow transition flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-rotate-right"></i>
+                        <span>Nueva Sesión (Reordenar)</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Review Breakdown -->
+            <div class="bg-white rounded-xl shadow-md p-6 md:p-8 border border-slate-200">
+                <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center space-x-2">
+                    <i class="fa-solid fa-list-check text-emerald-600"></i>
+                    <span>Revisión Detallada de Respuestas</span>
+                </h3>
+
+                <div id="review-list" class="space-y-4">
+                    <!-- Dynamic review items -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-slate-400 py-4 text-center text-xs">
+        <div class="max-w-4xl mx-auto px-4">
+            Cuestionario de Evaluación Continua &bull; Basado en el documento "El Suelo y el Modelado del Relieve"
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Master Question Bank (15 items based strictly on attached PDF)
+        const rawQuestions = [
+            {
+                question: "¿Qué es el suelo según la definición presentada en el documento?",
+                options: [
+                    "Una interfase resultado de la interacción de la geosfera, atmósfera, hidrosfera, criosfera y biosfera.",
+                    "Una capa inerte de rocas erosionadas exclusivamente por la fuerza de la gravedad.",
+                    "Un depósito volcánico compuesto únicamente por minerales inorgánicos sin vida orgánicas.",
+                    "Una mezcla homogénea de arcilla y agua subterránea sin influencia biológica."
+                ],
+                correctIndex: 0,
+                rationale: "El documento especifica en la página 1 que el suelo es una interfase que resulta de la interacción de las cinco esferas terrestres y sirve de sustrato y hábitat a múltiples organismos."
+            },
+            {
+                question: "¿En qué horizonte del suelo se acumula el humus que le otorga su característico color oscuro?",
+                options: [
+                    "Horizonte A",
+                    "Horizonte O",
+                    "Horizonte B",
+                    "Horizonte C"
+                ],
+                correctIndex: 0,
+                rationale: "El Horizonte A es la capa que acumula el humus, dándole su color oscuro característico (Página 1)."
+            },
+            {
+                question: "¿Qué caracteriza al Horizonte B dentro del perfil del suelo?",
+                options: [
+                    "Acumula minerales arrastrados por el agua del horizonte A y presenta un color pardo rojizo por óxidos de hierro y arcilla.",
+                    "Es la capa más superficial formada por restos vegetales casi inalterados.",
+                    "Está formado exclusivamente por fragmentos alterados por meteorización de la roca madre.",
+                    "Es la roca madre inalterada que sirve de base a todo el perfil."
+                ],
+                correctIndex: 0,
+                rationale: "Según el texto (Página 1), el Horizonte B acumula minerales arrastrados del horizonte A y tiene un color pardo rojizo debido a los óxidos de hierro y arcilla."
+            },
+            {
+                question: "¿Cuál es la diferencia fundamental entre desertización y desertificación expresada en el texto?",
+                options: [
+                    "La desertización se debe a factores naturales (clima árido, erosión, pendiente) y la desertificación es provocada por la sobreexplotación humana.",
+                    "La desertización ocurre solo en la costa y la desertificación ocurre únicamente en áreas glaciares.",
+                    "La desertificación destruye rocas duras mientras que la desertización solo destruye la arcilla.",
+                    "No existe diferencia; ambos conceptos se refieren exactamente a los mismos procesos naturales."
+                ],
+                correctIndex: 0,
+                rationale: "En el documento (Página 1) se aclara que la desertización es la pérdida de suelo fértil por erosión natural/clima, mientras que actividades como agricultura, deforestación o minería sobreexplotan el suelo provocando su pérdida por desertificación."
+            },
+            {
+                question: "¿Qué tipo de meteorización se produce por la acción de las raíces de las plantas, hongos, líquenes o la fauna como las lombrices?",
+                options: [
+                    "Meteorización biológica",
+                    "Meteorización física o mecánica",
+                    "Meteorización química",
+                    "Meteorización eólica"
+                ],
+                correctIndex: 0,
+                rationale: "La meteorización biológica es aquella en la que las raíces, microorganismos y fauna fragmentan las rocas (Página 3)."
+            },
+            {
+                question: "El deterioro de monumentos de caliza por la lluvia con contaminantes atmosféricos ('mal de la piedra') es un ejemplo de:",
+                options: [
+                    "Meteorización química",
+                    "Meteorización física",
+                    "Sedimentación glaciar",
+                    "Erosión eólica por abrasión"
+                ],
+                correctIndex: 0,
+                rationale: "La disolución de la caliza al reaccionar con el agua de lluvia cargada de contaminantes altera su composición química, por lo que es meteorización química (Página 3)."
+            },
+            {
+                question: "¿Qué forma del relieve originada por aguas salvajes consiste en torres donde rocas resistentes superiores protegen a materiales blandos inferiores?",
+                options: [
+                    "Pirámides de tierra o chimeneas de hadas",
+                    "Cárcavas",
+                    "Lenares o lapiaces",
+                    "Meandros"
+                ],
+                correctIndex: 0,
+                rationale: "Las pirámides de tierra o chimeneas de hadas ocurren cuando las rocas resistentes superiores protegen de la erosión a los materiales blandos inferiores (Página 4)."
+            },
+            {
+                question: "En el curso medio de un río, ¿cómo se denominan las grandes curvas que describe el cauce al recorrer terrenos más llanos?",
+                options: [
+                    "Meandros",
+                    "Gargantas",
+                    "Cascadas",
+                    "Estratificación aluvial"
+                ],
+                correctIndex: 0,
+                rationale: "En el curso medio, cuando el río recorre terrenos más llanos, el cauce describe grandes curvas llamadas meandros (Página 4)."
+            },
+            {
+                question: "En el modelado kárstico, ¿qué es una dolina o torca?",
+                options: [
+                    "Una depresión del terreno generada por el hundimiento del techo de una cueva o por disolución de la roca caliza.",
+                    "Un pozo vertical profundo que conecta directamente con una corriente subterránea.",
+                    "Un depósito calcáreo de aguja que cuelga del techo de una cueva.",
+                    "Un paso horizontal subterráneo estrecho originado por el oleaje."
+                ],
+                correctIndex: 0,
+                rationale: "La dolina o torca es una depresión del terreno producida por el hundimiento del techo de la cueva o disolución de la caliza (Página 5)."
+            },
+            {
+                question: "¿Cómo se llama el pozo vertical profundo característico de los terrenos calizos kársticos?",
+                options: [
+                    "Sima",
+                    "Sumidero",
+                    "Galería",
+                    "Surgencia"
+                ],
+                correctIndex: 0,
+                rationale: "La sima se define expresamente en el esquema del modelado kárstico como un 'pozo vertical profundo' (Página 5)."
+            },
+            {
+                question: "¿Qué son las 'rocas aborregadas' producidas en el modelado glaciar?",
+                options: [
+                    "Superficies rocosas desgastadas que presentan estrías por el rozamiento y desplazamiento del hielo glaciar.",
+                    "Depósitos de piedras acumuladas en las laderas del valle glaciar.",
+                    "Grandes bloques erráticos que flotan sobre los lagos glaciares.",
+                    "Rocas volcánicas enfriadas bruscamente al contacto con la nieve del circo."
+                ],
+                correctIndex: 0,
+                rationale: "A medida que el glaciar avanza, erosiona el valle en 'U', desgasta las rocas y produce estrías en su superficie, denominadas rocas aborregadas (Página 5)."
+            },
+            {
+                question: "¿Qué es un 'tómbolo' en el modelado de las costas?",
+                options: [
+                    "Un depósito de arena o cantos que enlaza un islote con la línea de costa.",
+                    "Un depósito arenoso situado exclusivamente en zonas protegidas como las bahías.",
+                    "Un islote residual que se origina cuando se derrumba el techo de un arco marino.",
+                    "Una cavidad profunda abierta en la base de un acantilado por las olas."
+                ],
+                correctIndex: 0,
+                rationale: "Un tómbolo es un depósito de arena o cantos que une o enlaza un islote a la costa (Página 6)."
+            },
+            {
+                question: "En el modelado desértico, ¿cuáles son los nombres del desierto rocoso y del desierto de piedra respectivamente?",
+                options: [
+                    "Hamada (rocoso) y Reg (de piedra)",
+                    "Erg (rocoso) y Loess (de piedra)",
+                    "Uadi (rocoso) y Hamada (de piedra)",
+                    "Reg (rocoso) y Erg (de piedra)"
+                ],
+                correctIndex: 0,
+                rationale: "El viento arrastra partículas pequeñas dejando las más gruesas que forman el desierto rocoso (hamada) y el desierto de piedra (reg) (Página 6)."
+            },
+            {
+                question: "¿Qué es el 'Erg' y cuál es su elemento morfológico más característico?",
+                options: [
+                    "Es el desierto de arena, y su rasgo más característico son las dunas.",
+                    "Es el desierto de piedras, caracterizado por profundas grietas de desecación.",
+                    "Es un valle seco excavado por lluvias torrenciales ocasionales.",
+                    "Es un depósito fértil de polvo ligero transportado a lugares lejanos."
+                ],
+                correctIndex: 0,
+                rationale: "Al disminuir la velocidad del viento, la arena se acumula formando el desierto de arena (erg), cuyo rasgo más característico son las dunas (Página 6)."
+            },
+            {
+                question: "¿Qué rasgos definen el curso alto de un río cerca de su nacimiento?",
+                options: [
+                    "Discurre por terrenos rocosos y escarpados, formando valles en «V», gargantas, cascadas y rápidos.",
+                    "Forma grandes meandros, llanuras aluviales y valles en forma de artesa.",
+                    "Se produce la máxima sedimentación de materiales originando deltas y estuarios.",
+                    "El agua discurre muy lentamente y se mezcla de forma permanente con el mar."
+                ],
+                correctIndex: 0,
+                rationale: "Cerca del nacimiento (curso alto), los ríos discurren sobre terrenos rocosos y escarpados, formando valles en «V», profundas gargantas, cascadas y rápidos (Página 4)."
+            }
+        ];
+
+        // Session State Variables
+        let studentData = { name: "", group: "" };
+        let activeQuestions = [];
+        let userAnswers = new Array(15).fill(null);
+        let currentIndex = 0;
+
+        // Utility: Shuffle Array (Fisher-Yates)
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // Initialize Session with Randomized Questions & Options
+        function initSession() {
+            // Shuffle question order
+            const shuffledQ = shuffleArray(rawQuestions);
+
+            // Shuffle option order for each question while keeping track of correct index
+            activeQuestions = shuffledQ.map((qItem) => {
+                const originalOptions = qItem.options;
+                const correctText = originalOptions[qItem.correctIndex];
+                
+                // Shuffle options
+                const newOptions = shuffleArray(originalOptions);
+                const newCorrectIndex = newOptions.indexOf(correctText);
+
+                return {
+                    question: qItem.question,
+                    options: newOptions,
+                    correctIndex: newCorrectIndex,
+                    rationale: qItem.rationale
+                };
+            });
+
+            userAnswers = new Array(activeQuestions.length).fill(null);
+            currentIndex = 0;
+        }
+
+        // Start Quiz Trigger
+        function startQuiz(e) {
+            e.preventDefault();
+            const nameInput = document.getElementById('student-name').value.trim();
+            const groupInput = document.getElementById('student-group').value.trim();
+
+            if (!nameInput || !groupInput) return;
+
+            studentData.name = nameInput;
+            studentData.group = groupInput;
+
+            initSession();
+
+            // Switch screen
+            document.getElementById('screen-register').classList.add('hidden');
+            document.getElementById('screen-quiz').classList.remove('hidden');
+            document.getElementById('header-badge').classList.remove('hidden');
+
+            document.getElementById('quiz-student-tag').textContent = `Alumno: ${studentData.name} (${studentData.group})`;
+
+            renderQuestion();
+        }
+
+        // Render Current Question
+        function renderQuestion() {
+            const q = activeQuestions[currentIndex];
+            
+            // UI text update
+            document.getElementById('quiz-count-tag').textContent = `Pregunta ${currentIndex + 1} de ${activeQuestions.length}`;
+            document.getElementById('question-text').textContent = `${currentIndex + 1}. ${q.question}`;
+
+            // Progress bar
+            const percent = ((currentIndex + 1) / activeQuestions.length) * 100;
+            document.getElementById('progress-bar').style.width = `${percent}%`;
+
+            // Options container
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            const selectedOption = userAnswers[currentIndex];
+
+            q.options.forEach((optText, idx) => {
+                const isSelected = selectedOption === idx;
+
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.onclick = () => selectOption(idx);
+                btn.className = `w-full text-left p-4 rounded-xl border transition-all flex items-start space-x-3 ${
+                    isSelected 
+                        ? 'border-emerald-600 bg-emerald-50 text-emerald-900 font-medium shadow-sm' 
+                        : 'border-slate-200 bg-slate-50/50 hover:bg-slate-100 text-slate-700'
+                }`;
+
+                const radioCircle = document.createElement('div');
+                radioCircle.className = `w-5 h-5 rounded-full border flex items-center justify-center mt-0.5 flex-shrink-0 ${
+                    isSelected ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-slate-400 bg-white'
+                }`;
+                if (isSelected) {
+                    radioCircle.innerHTML = '<i class="fa-solid fa-check text-xs"></i>';
+                }
+
+                const spanText = document.createElement('span');
+                spanText.className = 'text-sm md:text-base leading-snug';
+                spanText.textContent = optText;
+
+                btn.appendChild(radioCircle);
+                btn.appendChild(spanText);
+                optionsContainer.appendChild(btn);
+            });
+
+            // Nav buttons state
+            document.getElementById('btn-prev').disabled = (currentIndex === 0);
+
+            if (currentIndex === activeQuestions.length - 1) {
+                document.getElementById('btn-next').classList.add('hidden');
+                document.getElementById('btn-submit').classList.remove('hidden');
+            } else {
+                document.getElementById('btn-next').classList.remove('hidden');
+                document.getElementById('btn-submit').classList.add('hidden');
+            }
+        }
+
+        // Option Selection
+        function selectOption(index) {
+            userAnswers[currentIndex] = index;
+            renderQuestion();
+        }
+
+        // Navigation
+        function nextQuestion() {
+            if (currentIndex < activeQuestions.length - 1) {
+                currentIndex++;
+                renderQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                renderQuestion();
+            }
+        }
+
+        // Finish Confirmation
+        function confirmFinish() {
+            const unansweredCount = userAnswers.filter(a => a === null).length;
+            if (unansweredCount > 0) {
+                const proceed = confirm(`Tienes ${unansweredCount} pregunta(s) sin responder. ¿Deseas finalizar el cuestionario de todos modos?`);
+                if (!proceed) return;
+            }
+            calculateAndShowResults();
+        }
+
+        // Results calculation & Rendering
+        function calculateAndShowResults() {
+            let correctCount = 0;
+            activeQuestions.forEach((q, idx) => {
+                if (userAnswers[idx] === q.correctIndex) {
+                    correctCount++;
+                }
+            });
+
+            const percentage = Math.round((correctCount / activeQuestions.length) * 100);
+
+            // Hide Quiz, Show Results
+            document.getElementById('screen-quiz').classList.add('hidden');
+            document.getElementById('screen-results').classList.remove('hidden');
+
+            document.getElementById('result-student-info').textContent = `Alumno: ${studentData.name} | Curso: ${studentData.group} | Fecha: ${new Date().toLocaleDateString('es-ES')}`;
+            document.getElementById('result-score-text').textContent = `${correctCount} / ${activeQuestions.length}`;
+            document.getElementById('result-percentage-text').textContent = `(${percentage}% de aciertos)`;
+
+            const badgeIcon = document.getElementById('result-badge-icon');
+            const resultTitle = document.getElementById('result-title');
+            const resultMsg = document.getElementById('result-message');
+
+            if (percentage >= 90) {
+                badgeIcon.className = 'w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-3 text-4xl bg-emerald-100 text-emerald-600';
+                badgeIcon.innerHTML = '<i class="fa-solid fa-trophy"></i>';
+                resultTitle.textContent = '¡Excelente Trabajo!';
+                resultMsg.textContent = 'Has demostrado un dominio sobresaliente de los contenidos sobre la formación del suelo y el modelado del relieve terrestre.';
+            } else if (percentage >= 60) {
+                badgeIcon.className = 'w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-3 text-4xl bg-blue-100 text-blue-600';
+                badgeIcon.innerHTML = '<i class="fa-solid fa-medal"></i>';
+                resultTitle.textContent = '¡Buen Trabajo!';
+                resultMsg.textContent = 'Has superado el cuestionario satisfactoriamente. Revisa las explicaciones de las preguntas falladas para afianzar tus conocimientos.';
+            } else {
+                badgeIcon.className = 'w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-3 text-4xl bg-amber-100 text-amber-600';
+                badgeIcon.innerHTML = '<i class="fa-solid fa-book-open"></i>';
+                resultTitle.textContent = 'Necesita Repaso';
+                resultMsg.textContent = 'Te recomendamos volver a leer el documento adjunto y realizar una nueva sesión de práctica para consolidar los conceptos clave.';
+            }
+
+            // Render Detailed Review Breakdown
+            const reviewList = document.getElementById('review-list');
+            reviewList.innerHTML = '';
+
+            activeQuestions.forEach((q, idx) => {
+                const uAns = userAnswers[idx];
+                const isCorrect = (uAns === q.correctIndex);
+                const userAnsText = uAns !== null ? q.options[uAns] : "Sin responder";
+                const correctAnsText = q.options[q.correctIndex];
+
+                const card = document.createElement('div');
+                card.className = `p-4 rounded-xl border ${isCorrect ? 'bg-emerald-50/50 border-emerald-200' : 'bg-red-50/50 border-red-200'}`;
+
+                card.innerHTML = `
+                    <div class="flex items-start justify-between gap-3 mb-2">
+                        <span class="font-bold text-slate-800 text-sm md:text-base">${idx + 1}. ${q.question}</span>
+                        <span class="px-2.5 py-0.5 rounded-full text-xs font-bold flex items-center space-x-1 flex-shrink-0 ${
+                            isCorrect ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'
+                        }">
+                            <i class="fa-solid ${isCorrect ? 'fa-circle-check' : 'fa-circle-xmark'}"></i>
+                            <span>${isCorrect ? 'Correcta' : 'Incorrecta'}</span>
+                        </span>
+                    </div>
+                    <div class="text-xs md:text-sm space-y-1 mb-2">
+                        <p class="${isCorrect ? 'text-emerald-900 font-medium' : 'text-red-800'}">
+                            <strong>Tu respuesta:</strong> ${userAnsText}
+                        </p>
+                        ${!isCorrect ? `<p class="text-emerald-900 font-medium"><strong>Respuesta correcta:</strong> ${correctAnsText}</p>` : ''}
+                    </div>
+                    <div class="bg-white/80 p-3 rounded-lg border border-slate-200 text-xs text-slate-600 mt-2">
+                        <i class="fa-solid fa-circle-info text-emerald-600 mr-1"></i>
+                        <strong>Justificación:</strong> ${q.rationale}
+                    </div>
+                `;
+                reviewList.appendChild(card);
+            });
+        }
+
+        // Reset & Restart Quiz Session
+        function resetQuiz() {
+            initSession();
+            document.getElementById('screen-results').classList.add('hidden');
+            document.getElementById('screen-quiz').classList.remove('hidden');
+            renderQuestion();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Generate PDF Report using jsPDF
+        function downloadPDFReport() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({
+                orientation: 'p',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            let correctCount = 0;
+            activeQuestions.forEach((q, idx) => {
+                if (userAnswers[idx] === q.correctIndex) correctCount++;
+            });
+            const percentage = Math.round((correctCount / activeQuestions.length) * 100);
+
+            // Header Banner
+            doc.setFillColor(16, 185, 129); // Emerald 500
+            doc.rect(0, 0, 210, 28, 'F');
+
+            doc.setTextColor(255, 255, 255);
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(16);
+            doc.text("INFORME DE EVALUACIÓN CONTINUA", 14, 12);
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'normal');
+            doc.text("Tema: El Suelo y el Modelado del Relieve", 14, 20);
+
+            // Student Metadata Box
+            doc.setTextColor(30, 41, 59);
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'bold');
+            doc.text(`Alumno: ${studentData.name}`, 14, 36);
+            doc.text(`Curso/Grupo: ${studentData.group}`, 14, 42);
+            doc.text(`Fecha de realización: ${new Date().toLocaleDateString('es-ES')}`, 14, 48);
+
+            // Score Summary Badge Box
+            doc.setFillColor(241, 245, 249);
+            doc.rect(135, 32, 61, 20, 'F');
+            doc.setDrawColor(203, 213, 225);
+            doc.rect(135, 32, 61, 20, 'S');
+
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(100, 116, 139);
+            doc.text("PUNTUACIÓN FINAL", 140, 38);
+            doc.setFontSize(14);
+            doc.setTextColor(16, 185, 129);
+            doc.text(`${correctCount} / 15  (${percentage}%)`, 140, 47);
+
+            doc.setDrawColor(203, 213, 225);
+            doc.line(14, 54, 196, 54);
+
+            // Section Title
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(30, 41, 59);
+            doc.text("Desglose de Preguntas y Correcciones", 14, 62);
+
+            let yPos = 70;
+            const pageHeight = 280;
+
+            activeQuestions.forEach((q, idx) => {
+                const uAns = userAnswers[idx];
+                const isCorrect = (uAns === q.correctIndex);
+                const userAnsText = uAns !== null ? q.options[uAns] : "Sin responder";
+                const correctAnsText = q.options[q.correctIndex];
+
+                // Check page space
+                if (yPos > pageHeight - 35) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+
+                // Question Title
+                doc.setFontSize(9.5);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(30, 41, 59);
+                
+                const splitQuestion = doc.splitTextToSize(`${idx + 1}. ${q.question}`, 150);
+                doc.text(splitQuestion, 14, yPos);
+
+                // Badge Correct/Incorrect
+                if (isCorrect) {
+                    doc.setFillColor(209, 250, 229);
+                    doc.setTextColor(6, 95, 70);
+                    doc.rect(170, yPos - 3, 26, 5, 'F');
+                    doc.setFontSize(8);
+                    doc.text("CORRECTA", 172, yPos + 0.5);
+                } else {
+                    doc.setFillColor(254, 226, 226);
+                    doc.setTextColor(153, 27, 27);
+                    doc.rect(170, yPos - 3, 26, 5, 'F');
+                    doc.setFontSize(8);
+                    doc.text("INCORRECTA", 171, yPos + 0.5);
+                }
+
+                yPos += (splitQuestion.length * 4.5);
+
+                // Answers Details
+                doc.setFontSize(8.5);
+                doc.setFont('helvetica', 'normal');
+                
+                if (isCorrect) {
+                    doc.setTextColor(6, 95, 70);
+                    const splitUserAns = doc.splitTextToSize(`Respuesta: ${userAnsText}`, 175);
+                    doc.text(splitUserAns, 18, yPos);
+                    yPos += (splitUserAns.length * 4);
+                } else {
+                    doc.setTextColor(153, 27, 27);
+                    const splitUserAns = doc.splitTextToSize(`Tu respuesta: ${userAnsText}`, 175);
+                    doc.text(splitUserAns, 18, yPos);
+                    yPos += (splitUserAns.length * 4);
+
+                    doc.setTextColor(6, 95, 70);
+                    const splitCorrectAns = doc.splitTextToSize(`Respuesta correcta: ${correctAnsText}`, 175);
+                    doc.text(splitCorrectAns, 18, yPos);
+                    yPos += (splitCorrectAns.length * 4);
+                }
+
+                // Rationale
+                doc.setFontSize(8);
+                doc.setTextColor(71, 85, 105);
+                const splitRationale = doc.splitTextToSize(`Justificación: ${q.rationale}`, 175);
+                doc.text(splitRationale, 18, yPos);
+                yPos += (splitRationale.length * 3.8) + 4;
+
+                // Separator line
+                doc.setDrawColor(241, 245, 249);
+                doc.line(14, yPos - 2, 196, yPos - 2);
+            });
+
+            // Save PDF File
+            const cleanName = studentData.name.replace(/[^a-zA-Z0-9]/g, '_');
+            doc.save(`Informe_Cuestionario_Suelo_Relieve_${cleanName}.pdf`);
+        }
+    </script>
+</body>
+</html>
