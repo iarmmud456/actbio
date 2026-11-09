@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuestionario de Evaluación: El Sistema Tierra y el Relieve</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- jsPDF CDN for PDF Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        /* Custom scrollbars and printing styles */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .question-btn-active { ring: 2px solid #059669; }
+        
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white; color: black; }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col justify-between antialiased">
+
+    <!-- HEADER BANNER -->
+    <header class="bg-slate-900 text-white border-b-4 border-emerald-500 shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 sm:px-6 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-lg bg-emerald-600 flex items-center justify-center text-white text-xl shadow">
+                    <i class="fa-solid fa-earth-americas"></i>
+                </div>
+                <div>
+                    <h1 class="text-base sm:text-lg font-bold leading-tight">Evaluación: El Sistema Tierra y el Relieve</h1>
+                    <p class="text-xs text-slate-300 hidden sm:block">Geosfera &bull; Atmósfera &bull; Hidrosfera &bull; El Suelo &bull; Modelado Terrestre</p>
+                </div>
+            </div>
+
+            <!-- Quiz Top Bar Indicators (Hidden during Registration) -->
+            <div id="quiz-top-bar" class="hidden flex items-center space-x-4">
+                <!-- Timer Badge -->
+                <div class="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center space-x-2 text-amber-400 font-mono text-sm shadow-inner">
+                    <i class="fa-regular fa-clock"></i>
+                    <span id="timer-display">00:00</span>
+                </div>
+                <!-- Student Name Badge -->
+                <div class="hidden md:flex items-center space-x-2 bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-lg text-xs">
+                    <i class="fa-solid fa-user-graduate text-emerald-400"></i>
+                    <span id="header-student-name" class="font-medium text-slate-200">--</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 py-6 sm:px-6 flex-grow w-full">
+
+        <!-- ================= SCREEN 1: REGISTRATION ================= -->
+        <section id="screen-register" class="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden my-6">
+            <div class="bg-gradient-to-r from-emerald-800 to-teal-700 p-6 sm:p-8 text-white text-center">
+                <div class="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-3 text-3xl backdrop-blur-sm">
+                    <i class="fa-solid fa-id-card"></i>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold">Registro del Estudiante</h2>
+                <p class="text-emerald-100 text-sm mt-1">Unidad Didáctica: El Sistema Tierra y sus Interfases</p>
+            </div>
+
+            <form id="form-register" onsubmit="handleStartQuiz(event)" class="p-6 sm:p-8 space-y-5">
+                <div>
+                    <label for="input-name" class="block text-sm font-semibold text-slate-700 mb-1">Nombre Completo <span class="text-red-500">*</span></label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400"><i class="fa-solid fa-user"></i></span>
+                        <input type="text" id="input-name" required placeholder="Ej. Carlos Mendoza Fernández" class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-800 placeholder-slate-400 outline-none transition">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="input-group" class="block text-sm font-semibold text-slate-700 mb-1">Curso / Grupo <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400"><i class="fa-solid fa-users-rectangle"></i></span>
+                            <input type="text" id="input-group" required placeholder="Ej. 3º ESO - Grupo B" class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-800 placeholder-slate-400 outline-none transition">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="input-school" class="block text-sm font-semibold text-slate-700 mb-1">Centro Educativo</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400"><i class="fa-solid fa-school"></i></span>
+                            <input type="text" id="input-school" placeholder="Ej. IES Ciencias de la Tierra" class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-800 placeholder-slate-400 outline-none transition">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs text-slate-600 space-y-2">
+                    <div class="font-bold text-slate-800 flex items-center space-x-1 text-sm">
+                        <i class="fa-solid fa-circle-info text-emerald-600"></i>
+                        <span>Instrucciones de la Evaluación:</span>
+                    </div>
+                    <ul class="list-disc list-inside space-y-1 pl-1">
+                        <li>El cuestionario consta de <strong>50 preguntas de opción múltiple</strong> (4 opciones por pregunta).</li>
+                        <li>Las preguntas y opciones se <strong>aleatorizan</strong> completamente en cada sesión.</li>
+                        <li>Puedes navegar libremente entre las 50 preguntas usando el panel numérico lateral.</li>
+                        <li>Al terminar se emitirá la calificación oficial y un <strong>Informe Certificado en PDF</strong>.</li>
+                    </ul>
+                </div>
+
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg hover:shadow-emerald-600/30 transition-all flex items-center justify-center space-x-2 text-base">
+                    <span>Iniciar Cuestionario (50 Preguntas)</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
+        </section>
+
+
+        <!-- ================= SCREEN 2: QUIZ INTERACTION ================= -->
+        <section id="screen-quiz" class="hidden grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+            <!-- QUESTION CONTENT (3 Columns on Large Screens) -->
+            <div class="lg:col-span-3 space-y-4">
+                
+                <!-- Question Card -->
+                <div class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
+                    <!-- Progress Bar Header -->
+                    <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
+                        <div class="flex items-center space-x-3">
+                            <span id="quiz-question-number" class="bg-emerald-600 text-white font-bold text-xs px-3 py-1 rounded-full uppercase tracking-wider">
+                                Pregunta 1 de 50
+                            </span>
+                            <span id="quiz-status-badge" class="bg-amber-100 text-amber-800 font-semibold text-xs px-2.5 py-1 rounded-full">
+                                Pendiente
+                            </span>
+                        </div>
+                        <div class="w-full sm:w-48 bg-slate-200 rounded-full h-2.5 overflow-hidden">
+                            <div id="quiz-progress-bar" class="bg-emerald-600 h-2.5 rounded-full transition-all duration-300" style="width: 2%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Question Body -->
+                    <div class="p-6 sm:p-8">
+                        <h3 id="question-text" class="text-lg sm:text-xl font-bold text-slate-900 leading-snug mb-6">
+                            --
+                        </h3>
+
+                        <!-- Options List -->
+                        <div id="options-container" class="space-y-3">
+                            <!-- Populated via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Question Footer Controls -->
+                    <div class="bg-slate-50 px-6 py-4 border-t border-slate-200 flex items-center justify-between">
+                        <button id="btn-prev" onclick="navigateQuestion(-1)" class="px-4 py-2.5 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 font-semibold rounded-xl text-sm transition flex items-center space-x-2 disabled:opacity-40 disabled:cursor-not-allowed">
+                            <i class="fa-solid fa-chevron-left text-xs"></i>
+                            <span>Anterior</span>
+                        </button>
+
+                        <div class="flex items-center space-x-3">
+                            <button id="btn-next" onclick="navigateQuestion(1)" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm shadow transition flex items-center space-x-2">
+                                <span>Siguiente</span>
+                                <i class="fa-solid fa-chevron-right text-xs"></i>
+                            </button>
+                            <button id="btn-submit" onclick="confirmSubmitQuiz()" class="hidden px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-sm shadow transition flex items-center space-x-2">
+                                <i class="fa-solid fa-check-double"></i>
+                                <span>Finalizar y Entregar</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QUESTION PALETTE SIDEBAR (1 Column on Large Screens) -->
+            <div class="lg:col-span-1 space-y-4">
+                <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-5 sticky top-20">
+                    <div class="flex items-center justify-between mb-3 pb-3 border-b border-slate-100">
+                        <h4 class="font-bold text-slate-800 text-sm flex items-center space-x-2">
+                            <i class="fa-solid fa-grid-2 text-emerald-600"></i>
+                            <span>Navegador (50 Preguntas)</span>
+                        </h4>
+                        <span id="answered-count-tag" class="text-xs bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-semibold">
+                            0/50
+                        </span>
+                    </div>
+
+                    <!-- 50 Question Grid -->
+                    <div id="question-grid" class="grid grid-cols-5 gap-1.5 max-h-[380px] overflow-y-auto p-1">
+                        <!-- 50 Buttons populated via JS -->
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-around text-[11px] text-slate-500">
+                        <div class="flex items-center space-x-1">
+                            <span class="w-3 h-3 rounded-full bg-emerald-600 inline-block"></span>
+                            <span>Respondida</span>
+                        </div>
+                        <div class="flex items-center space-x-1">
+                            <span class="w-3 h-3 rounded-full bg-slate-200 border border-slate-300 inline-block"></span>
+                            <span>Pendiente</span>
+                        </div>
+                    </div>
+
+                    <button onclick="confirmSubmitQuiz()" class="w-full mt-4 bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition flex items-center justify-center space-x-2 shadow">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span>Entregar Cuestionario</span>
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- ================= SCREEN 3: RESULTS & PDF REPORT ================= -->
+        <section id="screen-results" class="hidden space-y-8 max-w-5xl mx-auto">
+            
+            <!-- Overall Score Card -->
+            <div class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+                <div id="results-header-bg" class="p-8 text-white text-center bg-gradient-to-r from-emerald-800 to-teal-700">
+                    <div id="results-icon" class="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-3 text-4xl backdrop-blur-sm">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <h2 class="text-3xl font-extrabold" id="result-qualification-title">¡Resultados Obtenidos!</h2>
+                    <p id="result-student-info" class="text-emerald-100 text-sm mt-1">Alumno: -- | Curso: --</p>
+                </div>
+
+                <div class="p-6 sm:p-8 text-center border-b border-slate-100">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl mx-auto mb-6">
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <span class="block text-xs uppercase font-bold text-slate-400 mb-1">Nota Final</span>
+                            <span id="result-score-10" class="text-3xl font-black text-emerald-600">0.0</span>
+                            <span class="text-xs text-slate-500">/ 10</span>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <span class="block text-xs uppercase font-bold text-slate-400 mb-1">Aciertos Totales</span>
+                            <span id="result-score-50" class="text-3xl font-black text-slate-800">0</span>
+                            <span class="text-xs text-slate-500">/ 50 preguntas</span>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <span class="block text-xs uppercase font-bold text-slate-400 mb-1">Porcentaje</span>
+                            <span id="result-percentage" class="text-3xl font-black text-blue-600">0%</span>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <span class="block text-xs uppercase font-bold text-slate-400 mb-1">Tiempo Empleado</span>
+                            <span id="result-time" class="text-2xl font-black text-amber-600">00:00</span>
+                        </div>
+                    </div>
+
+                    <p id="result-feedback-text" class="text-slate-600 text-sm max-w-2xl mx-auto mb-6">
+                        --
+                    </p>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+                        <button onclick="downloadPDFReport()" class="w-full sm:w-auto px-6 py-3.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl shadow-lg transition flex items-center justify-center space-x-2 text-sm">
+                            <i class="fa-solid fa-file-pdf text-lg"></i>
+                            <span>Descargar Informe Certificado en PDF</span>
+                        </button>
+                        <button onclick="resetQuizSession()" class="w-full sm:w-auto px-6 py-3.5 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl shadow-md transition flex items-center justify-center space-x-2 text-sm">
+                            <i class="fa-solid fa-rotate-right"></i>
+                            <span>Nueva Sesión (Aleatorizar de Nuevo)</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Breakdown List -->
+            <div class="bg-white rounded-2xl shadow-lg border border-slate-200 p-6 sm:p-8">
+                <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-200">
+                    <h3 class="text-xl font-bold text-slate-800 flex items-center space-x-2">
+                        <i class="fa-solid fa-list-check text-emerald-600"></i>
+                        <span>Revisión Detallada de las 50 Preguntas</span>
+                    </h3>
+                    <span class="text-xs text-slate-500 font-medium">Respuestas &bull; Soluciones &bull; Explicaciones</span>
+                </div>
+
+                <div id="review-container" class="space-y-4">
+                    <!-- 50 Detailed Review Cards populated via JS -->
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 text-slate-400 py-4 border-t border-slate-800 text-center text-xs">
+        <div class="max-w-7xl mx-auto px-4">
+            Cuestionario de Evaluación Académica &bull; Biología y Geología: "El Sistema Tierra, Geosfera, Atmósfera, Hidrosfera, El Suelo y el Modelado del Relieve"
+        </div>
+    </footer>
+
+
+    <!-- JAVASCRIPT ENGINE -->
+    <script>
+        // MASTER QUESTION BANK: 50 Comprehensive Questions strictly derived from the 12-page document
+        const masterQuestions = [
+            // BLOCK 1: SUBSISTEMAS TERRESTRES Y GEOSFERA (1-8)
+            {
+                question: "¿Cuáles son los cinco subsistemas que componen el complejo sistema de la Tierra según el documento?",
+                options: [
+                    "Hidrosfera, Criosfera, Atmósfera, Biosfera y Litosfera.",
+                    "Geosfera, Estratosfera, Hidrosfera, Núcleo y Corteza.",
+                    "Troposfera, Mesosfera, Termosfera, Exosfera y Geosfera.",
+                    "Biosfera, Magmasfera, Hidrosfera, Atmósfera y Manto."
+                ],
+                correctIndex: 0,
+                rationale: "El documento especifica en la página 1 que la Tierra está compuesta por cinco subsistemas principales: Hidrosfera, Criosfera, Atmósfera, Biosfera y Litosfera."
+            },
+            {
+                question: "¿Cómo se define la Criosfera en el contexto del sistema terrestre?",
+                options: [
+                    "Es el depósito de hielo del planeta (hielos polares y glaciares), considerado un subsistema de la hidrosfera.",
+                    "Es la capa gaseosa más fría situada en el límite con el espacio exterior.",
+                    "Es la porción congelada del manto terrestre debajo de los continentes.",
+                    "Es la zona subterránea donde el agua pura se encuentra atrapada en minerales."
+                ],
+                correctIndex: 0,
+                rationale: "En el esquema de los subsistemas (Página 1), la Criosfera se define como el depósito de hielo del planeta y subsistema de la hidrosfera."
+            },
+            {
+                question: "¿En qué se diferencia la corteza oceánica de la corteza continental?",
+                options: [
+                    "La oceánica mide 6-10 km de espesor y contiene basalto; la continental mide 10-70 km y contiene granito.",
+                    "La oceánica mide 10-70 km de espesor y contiene granito; la continental mide 6-10 km y contiene basalto.",
+                    "La oceánica es sólida y rígida mientras que la continental está formada por roca fluida y derretida.",
+                    "La oceánica forma las montañas continentales y la continental forma las fosas marinas."
+                ],
+                correctIndex: 0,
+                rationale: "La página 1 detalla que la corteza oceánica (6-10 km) contiene basalto y forma los fondos marinos, mientras que la continental (10-70 km) contiene granito y forma los continentes."
+            },
+            {
+                question: "¿Cuál es el espesor aproximado del manto terrestre y cuáles son sus subdivisiones?",
+                options: [
+                    "Tiene un espesor de 2 900 km y se divide en Manto Superior (sólido con zonas fluidas) y Manto Inferior (más denso y sólido).",
+                    "Tiene un espesor de 6 370 km y se divide en Manto Plástico y Manto Gaseoso.",
+                    "Tiene un espesor de 500 km y se compone de basalto y hierro líquido únicamente.",
+                    "Tiene un espesor de 12 km y se divide en Manto Continental y Manto Oceánico."
+                ],
+                correctIndex: 0,
+                rationale: "Según la sección 'La geosfera' (Página 1), el manto tiene 2 900 km de espesor con un manto superior y un manto inferior más denso."
+            },
+            {
+                question: "¿Qué elementos químicos componen principalmente el núcleo terrestre y hasta qué profundidad se extiende?",
+                options: [
+                    "Compuesto por hierro y níquel, alcanzando una profundidad de 6 370 km.",
+                    "Compuesto por granito y basalto, alcanzando los 2 900 km de profundidad.",
+                    "Compuesto por silicio y aluminio, alcanzando los 10 000 km.",
+                    "Compuesto por oxígeno y nitrógeno comprimidos a 12 000 km."
+                ],
+                correctIndex: 0,
+                rationale: "La página 1 indica que el núcleo es la capa más interna y densa, formada por hierro y níquel, alcanzando 6 370 km de profundidad."
+            },
+            {
+                question: "¿Por qué razón el núcleo interno de la Tierra se mantiene en estado sólido a pesar de las altísimas temperaturas?",
+                options: [
+                    "Debido a la elevada presión existente en el centro de la Tierra.",
+                    "Porque está en contacto directo con las aguas frías subterráneas.",
+                    "Por la presencia de dióxido de carbono helado en su estructura.",
+                    "Porque la temperatura desciende a 0 °C en el centro exacto del planeta."
+                ],
+                correctIndex: 0,
+                rationale: "El texto especifica que el núcleo interno es sólido debido a la elevada presión (Página 1)."
+            },
+            {
+                question: "¿Qué es una interfase en la dinámica del planeta Tierra según la unidad didáctica?",
+                options: [
+                    "Una zona de contacto generada por la interacción entre diferentes subsistemas terrestres.",
+                    "Una falla tectónica profunda que divide el manto del núcleo.",
+                    "Un límite donde la atmósfera pierde sus gases hacia el espacio exterior.",
+                    "Una masa de agua dulce atrapada dentro de rocas volcánicas."
+                ],
+                correctIndex: 0,
+                rationale: "Las interacciones entre los subsistemas terrestres generan zonas de contacto llamadas interfases, como el suelo y el clima (Página 1 y 8)."
+            },
+            {
+                question: "¿Cómo varían la temperatura y la presión en el manto a medida que se incrementa la profundidad?",
+                options: [
+                    "Tanto la temperatura como la presión aumentan progresivamente con la profundidad.",
+                    "La temperatura aumenta pero la presión disminuye drásticamente.",
+                    "La temperatura disminuye hasta congelar los minerales a gran profundidad.",
+                    "Ambas variables se mantienen constantes en todo el manto."
+                ],
+                correctIndex: 0,
+                rationale: "En la descripción del manto (Página 1) se indica expresamente: 'Su temperatura y presión aumentan con la profundidad'."
+            },
+
+            // BLOCK 2: LA ATMÓSFERA Y SUS CAPAS (9-17)
+            {
+                question: "¿Cuál fue la causa principal del aumento del oxígeno y la disminución del dióxido de carbono en la atmósfera primitiva?",
+                options: [
+                    "La aparición de los primeros organismos fotosintéticos (cianobacterias y algas).",
+                    "El enfriamiento paulatino del núcleo terrestre y la cese de volcanes.",
+                    "La evaporación constante del agua de los mares salados primigenios.",
+                    "El impacto masivo de cometas formados de hielo de oxígeno puro."
+                ],
+                correctIndex: 0,
+                rationale: "La página 2 explica que al surgir la vida fotosintética (cianobacterias y algas), el CO2 disminuyó y el O2 aumentó gradualmente."
+            },
+            {
+                question: "¿Cuál es la composición porcentual aproximada de los gases del aire en la atmósfera actual?",
+                options: [
+                    "78% nitrógeno, 21% oxígeno, 0,9% argón y 0,1% otros gases (CO2, H2O, O3).",
+                    "50% oxígeno, 40% nitrógeno, 9% dióxido de carbono y 1% argón.",
+                    "90% nitrógeno, 5% oxígeno, 3% vapor de agua y 2% helio.",
+                    "70% dióxido de carbono, 20% nitrógeno, 9% oxígeno y 1% metano."
+                ],
+                correctIndex: 0,
+                rationale: "En la página 2 se indica la composición exacta del aire: 78% N2, 21% O2, 0,9% Ar y 0,1% CO2, vapor de agua, ozono y otros."
+            },
+            {
+                question: "¿En qué capa atmosférica se desarrolla la vida y se producen casi todos los fenómenos meteorológicos?",
+                options: [
+                    "Troposfera (hasta los 12 km de altitud).",
+                    "Estratosfera (entre 12 y 50 km de altitud).",
+                    "Mesosfera (entre 50 y 85 km de altitud).",
+                    "Termosfera (entre 85 y 690 km de altitud)."
+                ],
+                correctIndex: 0,
+                rationale: "La Troposfera llega hasta los 12 km, contiene el 80% del aire, alberga la vida y donde ocurren los fenómenos atmosféricos (Página 2)."
+            },
+            {
+                question: "¿En qué capa atmosférica se localiza la capa de ozono protectora contra los rayos UV?",
+                options: [
+                    "Estratosfera (entre 12 y 50 km de altitud).",
+                    "Troposfera (entre 0 y 12 km de altitud).",
+                    "Termosfera (entre 85 y 690 km de altitud).",
+                    "Exosfera (por encima de 690 km)."
+                ],
+                correctIndex: 0,
+                rationale: "La Estratosfera (12 a 50 km) alberga la capa de ozono que absorbe la radiación ultravioleta del Sol (Página 2)."
+            },
+            {
+                question: "¿Qué fenómeno astronómico-meteorológico característico ocurre en la Mesosfera?",
+                options: [
+                    "Se desintegran los meteoros de pequeño tamaño convirtiéndose en estrellas fugaces.",
+                    "Se forman los anticiclones y frentes fríos de lluvia intensa.",
+                    "Orbitan los satélites de telecomunicaciones artificiales.",
+                    "Se alcanza la temperatura más alta del planeta (1000 °C)."
+                ],
+                correctIndex: 0,
+                rationale: "La Mesosfera (50-85 km) es el lugar donde los meteoros pequeños se desintegran formando estrellas fugaces (Página 2)."
+            },
+            {
+                question: "¿Qué características definen a la Termosfera?",
+                options: [
+                    "Filtra radiaciones solares de alta energía, origina auroras polares y alcanza 1 000 °C.",
+                    "Contiene el 80% de la masa de aire y regula el rocío.",
+                    "Alberga la capa de ozono y tiene muy poco aire (1%).",
+                    "Es la capa externa donde se difumina la atmósfera con el espacio."
+                ],
+                correctIndex: 0,
+                rationale: "La Termosfera (85-690 km) filtra radiaciones solares de alta energía, genera auroras polares y su temperatura sube a 1000 °C (Página 2)."
+            },
+            {
+                question: "¿En qué capa atmosférica orbitan habitualmente los satélites artificiales por encima de los 690 km?",
+                options: [
+                    "Exosfera",
+                    "Mesosfera",
+                    "Estratosfera",
+                    "Troposfera"
+                ],
+                correctIndex: 0,
+                rationale: "La Exosfera se extiende por encima de los 690 km hasta los 10 000 km y allí se encuentran los satélites artificiales (Página 2)."
+            },
+            {
+                question: "¿Qué radiaciones solares perjudiciales absorbe la atmósfera en sus capas superiores e intermedias?",
+                options: [
+                    "Rayos gamma, rayos X y radiación ultravioleta (UV).",
+                    "Luz visible y ondas de radio únicamente.",
+                    "Infrarrojos lejanos y ondas sísmicas de baja frecuencia.",
+                    "Luz verde y luz azul de la fotosíntesis."
+                ],
+                correctIndex: 0,
+                rationale: "El esquema de la página 4 muestra que la atmósfera filtra la radiación gamma, los rayos X y la radiación ultravioleta."
+            },
+            {
+                question: "¿Cuál sería la temperatura media de la Tierra si NO existiese el efecto invernadero natural?",
+                options: [
+                    "Unos -18 °C (en lugar de los 15 °C actuales).",
+                    "Unos 0 °C exactos.",
+                    "Unos -80 °C en todo el planeta.",
+                    "Unos +45 °C hipercálidos."
+                ],
+                correctIndex: 0,
+                rationale: "La página 4 explica que sin el efecto invernadero, la temperatura media de la Tierra habría sido de unos -18 °C y el agua no estaría líquida."
+            },
+
+            // BLOCK 3: FENÓMENOS ATMOSFÉRICOS Y CLIMA (18-24)
+            {
+                question: "¿Cómo se explica la formación del viento a partir de las diferencias de densidad del aire?",
+                options: [
+                    "El aire caliente es menos denso y asciende, mientras que el aire frío es más denso y desciende, generando desplazamiento horizontal.",
+                    "El aire frío asciende por ser más liviano y atrae al aire caliente hacia la superficie.",
+                    "Las corrientes de agua salada empujan mecánicamente el aire atmosférico hacia los polos.",
+                    "La gravedad atrae solo el vapor de agua dejando el aire seco estático."
+                ],
+                correctIndex: 0,
+                rationale: "En la sección 'Viento' (Página 3) se detalla que el aire caliente menos denso asciende y el frío más denso desciende, provocando desplazamientos horizontales de masas de aire."
+            },
+            {
+                question: "¿Qué caracteriza a un anticiclón en términos de presión atmosférica y tiempo meteorológico?",
+                options: [
+                    "El aire frío desciende generando una zona de alta presión y tiempo estable.",
+                    "El aire caliente asciende generando baja presión y fuertes precipitaciones.",
+                    "El viento gira en espiral ascendente formando tornados destructivos.",
+                    "La condensación constante crea nieblas espesas permanentes."
+                ],
+                correctIndex: 0,
+                rationale: "En los anticiclones el aire frío más denso desciende y genera una zona de altas presiones y tiempo estable (Página 3)."
+            },
+            {
+                question: "¿Qué ocurre meteorológicamente en las borrascas o ciclones?",
+                options: [
+                    "El aire caliente menos denso asciende, creando zonas de baja presión, nubes y precipitaciones.",
+                    "El aire frío desciende velozmente creando cielos despejados y sequía.",
+                    "Las nubes se congelan instantáneamente impidiendo la lluvia.",
+                    "La presión atmosférica aumenta al máximo impidiendo el movimiento del viento."
+                ],
+                correctIndex: 0,
+                rationale: "En los ciclones o borrascas el aire caliente menos denso asciende y genera una zona de bajas presiones con nubes y precipitaciones (Página 3)."
+            },
+            {
+                question: "¿Cómo se forma el rocío y en qué se diferencia de la escarcha?",
+                options: [
+                    "El rocío es condensación sobre las hojas; si estas gotas se congelan por la noche, aparece la escarcha.",
+                    "El rocío cae desde las nubes altas y la escarcha se evapora desde el suelo arcilloso.",
+                    "El rocío es granizo derretido y la escarcha es nieve que cae en verano.",
+                    "La escarcha se forma en la estratofera y el rocío en las corrientes subterráneas."
+                ],
+                correctIndex: 0,
+                rationale: "Si la condensación ocurre sobre las hojas se forma el rocío; si las gotas de rocío se congelan durante la noche aparece la escarcha (Página 3)."
+            },
+            {
+                question: "¿Bajo qué condiciones se produce el granizo como tipo de precipitación?",
+                options: [
+                    "Cuando las gotas de agua se forman en el interior de nubes de tormenta y se congelan antes de caer.",
+                    "Cuando la temperatura de toda la atmósfera es inferior a 0 °C cayendo en copos.",
+                    "Cuando el rocío de las plantas se evapora bruscamente al mediodía.",
+                    "Cuando un frente cálido choca contra una barrera costera alta."
+                ],
+                correctIndex: 0,
+                rationale: "Si las gotas de agua se forman en el interior de nubes de tormenta y se congelan, caen en forma de granizo (Página 3)."
+            },
+            {
+                question: "¿Qué sucede en un frente frío meteorológico?",
+                options: [
+                    "El aire frío se introduce debajo del caliente provocando un ascenso rápido de este y fuertes precipitaciones.",
+                    "El aire caliente se desliza suavemente sobre el frío produciendo lluvias muy débiles.",
+                    "El viento se detiene por completo creando altas presiones duraderas.",
+                    "Las corrientes marinas frías evaporan instantáneamente el agua de las nubes."
+                ],
+                correctIndex: 0,
+                rationale: "En un frente frío, el aire frío se introduce debajo del caliente y produce fuertes precipitaciones (Página 3)."
+            },
+            {
+                question: "¿Cómo influye la forma esférica de la Tierra en la incidencia de la radiación solar y el clima?",
+                options: [
+                    "Los rayos inciden perpendiculares en el ecuador (más calor) y oblicuos en los polos (muy frío), generando desequilibrio térmico y convección.",
+                    "Los polos reciben radiación perpendicular directa haciéndolos más cálidos que las latitudes medias.",
+                    "La curvatura impide que la radiación llegue al ecuador originando nieves permanentes en el trópico.",
+                    "Provoca que la masa de la atmósfera se concentre únicamente en la zona templada."
+                ],
+                correctIndex: 0,
+                rationale: "Debido a la esfericidad terrestre, los rayos inciden perpendiculares en el ecuador (1) y oblicuos en los polos (2), originando corrientes de convección (Página 8)."
+            },
+
+            // BLOCK 4: LA HIDROSFERA Y EL CICLO DEL AGUA (25-30)
+            {
+                question: "¿Cuál es la distribución del agua global entre mares/océanos y agua dulce en la Tierra?",
+                options: [
+                    "97% en mares y océanos (salada) y 3% de agua dulce.",
+                    "50% agua salada y 50% agua dulce en ríos y lagos.",
+                    "80% en casquetes polares y 20% en mares superficiales.",
+                    "99,9% agua salada e inaccesible y solo 0,1% en los polos."
+                ],
+                correctIndex: 0,
+                rationale: "El esquema de la página 5 indica claramente que el 97% del agua pertenece a mares y océanos, y el 3% es agua dulce."
+            },
+            {
+                question: "¿Qué porcentaje del agua total del planeta representa el agua dulce realmente accesible para el consumo humano?",
+                options: [
+                    "Un 0,03% del agua total del planeta (superficial en ríos, lagos y subterránea somera).",
+                    "Un 3% completo del agua del planeta.",
+                    "Un 0,6% del agua contenida en los glaciares.",
+                    "Un 12% del agua evaporada diariamente."
+                ],
+                correctIndex: 0,
+                rationale: "Solo las aguas superficiales (0,0003% ríos + 0,0156% lagos) y subterráneas someras son accesibles, sumando en conjunto un 0,03% del agua total (Página 5)."
+            },
+            {
+                question: "La mayor parte del agua dulce del planeta (un 2,37% del total global) se encuentra retenida en forma de:",
+                options: [
+                    "Casquetes polares y glaciares.",
+                    "Aguas subterráneas profundas.",
+                    "Vapor de agua en la troposfera.",
+                    "Lagos tectónicos y embalses artificiales."
+                ],
+                correctIndex: 0,
+                rationale: "El gráfico de la página 5 detalla que el 2,37% del agua total se halla en casquetes polares y glaciares."
+            },
+            {
+                question: "¿A qué se debe que la ciudad de Londres tenga un clima mucho más templado que Terranova (Canadá), estando ambas en la misma latitud?",
+                options: [
+                    "Londres recibe la influencia de la Corriente del Golfo (cálida), mientras Terranova recibe la Corriente del Labrador (fría).",
+                    "Londres está más cerca del núcleo terrestre y recibe más geotermia.",
+                    "Terranova no posee atmósfera para retener el calor nocturno.",
+                    "La Corriente del Labrador calienta Europa y la Corriente del Golfo enfría América."
+                ],
+                correctIndex: 0,
+                rationale: "En el mapa de corrientes (Página 5), la Corriente del Golfo (cálida) suaviza el clima de Europa/Londres, mientras que la del Labrador (fría) enfría Terranova."
+            },
+            {
+                question: "¿Qué propiedad del agua permite que los peces u organismos acuáticos sobrevivan bajo lagos helados en climas fríos?",
+                options: [
+                    "El hielo es menos denso que el agua líquida, por lo que flota y aísla el agua líquida inferior.",
+                    "El agua helada produce calor de fricción que mantiene el fondo a 40 °C.",
+                    "Las sales marinas se concentran en el hielo haciendo flotar a los peces.",
+                    "El hielo disuelve más oxígeno que el agua en estado gaseoso."
+                ],
+                correctIndex: 0,
+                rationale: "La página 6 explica que el hielo es menos denso que el agua líquida y flota, permitiendo que siga habiendo vida en el agua líquida inferior."
+            },
+            {
+                question: "¿Cuáles son los procesos clave del ciclo del agua descritos en el documento?",
+                options: [
+                    "Evaporación, Transpiración, Condensación, Transporte, Precipitación, Deshielo, Escorrentía, Infiltración y Circulación subterránea.",
+                    "Meteorización, Erosión, Transporte, Sedimentación, Gelifracción y Carbonatación.",
+                    "Fotosíntesis, Respiración, Combustión, Transpiración y Lixiviación.",
+                    "Subducción, Vulcanismo, Convección, Evaporación y Desalinización."
+                ],
+                correctIndex: 0,
+                rationale: "En la página 6 se describen detalladamente los 9 pasos numerados del ciclo hidrológico impulsado por el Sol y la gravedad."
+            },
+
+            // BLOCK 5: EL SUELO Y SU CONSERVACIÓN (31-36)
+            {
+                question: "¿Por qué el suelo se considera una 'interfase' según la unidad didáctica?",
+                options: [
+                    "Porque es el resultado directo de la interacción de la geosfera, atmósfera, hidrosfera, criosfera y biosfera.",
+                    "Porque se ubica entre la corteza continental y el manto superior fluido.",
+                    "Porque separa las aguas saladas marinas de las aguas dulces de los ríos.",
+                    "Porque es una capa exclusivamente inorgánica sin aire ni agua."
+                ],
+                correctIndex: 0,
+                rationale: "La página 7 indica que el suelo es una interfase resultado de la interacción de los 5 subsistemas terrestres."
+            },
+            {
+                question: "¿Qué es el humus y en qué horizonte del perfil del suelo se acumula principalmente?",
+                options: [
+                    "Es la sustancia orgánica del suelo y se acumula en el Horizonte A, dándole un color oscuro.",
+                    "Es la roca madre alterada acumulada en el Horizonte C.",
+                    "Son óxidos de hierro de color rojo acumulados en el Horizonte B.",
+                    "Es la capa de hojarasca inalterada del Horizonte O."
+                ],
+                correctIndex: 0,
+                rationale: "El Horizonte A acumula el humus (materia orgánica descompuesta), que le da un color oscuro (Página 7)."
+            },
+            {
+                question: "¿Cuáles son las características distintivas del Horizonte B del suelo?",
+                options: [
+                    "Acumula minerales arrastrados por el agua del horizonte A y presenta color pardo rojizo por óxidos de hierro y arcilla.",
+                    "Está formado por restos vegetales casi inalterados sin minerales.",
+                    "Es la roca madre totalmente inalterada y sin grietas (Horizonte D).",
+                    "Contiene únicamente agua pura y bacterias anaerobias."
+                ],
+                correctIndex: 0,
+                rationale: "El Horizonte B acumula minerales arrastrados del A y tiene color pardo rojizo por los óxidos de hierro y arcilla (Página 7)."
+            },
+            {
+                question: "¿En qué se diferencia la desertización de la desertificación en el documento?",
+                options: [
+                    "La desertización se debe a factores naturales (clima árido, pendiente, erosión) y la desertificación a la sobreexplotación humana (agricultura, deforestación, minería).",
+                    "La desertización ocurre en los polos y la desertificación en los valles fluviales.",
+                    "La desertificación destruye la roca madre y la desertización crea dunas de arena.",
+                    "Ambos términos se refieren exactamente al mismo proceso antrópico."
+                ],
+                correctIndex: 0,
+                rationale: "El texto (Página 7) define desertización como pérdida natural por erosión/clima, y desertificación como degradación por sobreexplotación humana."
+            },
+            {
+                question: "¿Qué método agrícola es el más adecuado para cultivar en laderas inclinadas y evitar la pérdida de suelo por erosión?",
+                options: [
+                    "Arar y cultivar en forma de terrazas horizontales (bancales).",
+                    "Arar y hacer surcos a favor de la pendiente del terreno.",
+                    "Eliminar toda la vegetación vegetal protectora antes de plantar.",
+                    "Regar continuamente con aguas salinizadas de acuíferos profundos."
+                ],
+                correctIndex: 0,
+                rationale: "En el debate de la página 7 (Laura vs Lucas), cultivar en terrazas horizontales (B) retiene el agua y evita la escorrentía erosiva."
+            },
+            {
+                question: "¿Qué factores condicionan las características específicas de cada tipo de suelo y las biocenosis que se desarrollan en ellos?",
+                options: [
+                    "La roca madre, la humedad, la acidez, el contenido en materia orgánica/mineral y la aireación.",
+                    "La distancia a la luna y la presencia de satélites artificiales únicamente.",
+                    "El espesor del núcleo externo fluido y la cantidad de azufre.",
+                    "La velocidad de rotación de la tierra en el ecuador."
+                ],
+                correctIndex: 0,
+                rationale: "En 'Tipos de suelos' (Página 7) se enuncian estos factores determinante: roca madre, humedad, acidez, materia orgánica, minerales y aireación."
+            },
+
+            // BLOCK 6: EL MODELADO DEL RELIEVE Y PROCESOS GEOLÓGICOS (37-41)
+            {
+                question: "¿Cuál es el motor o causa de los procesos geológicos internos que forman el relieve?",
+                options: [
+                    "El calor generado en el interior del núcleo y del manto terrestre.",
+                    "La energía solar que evapora el agua de los mares.",
+                    "La atracción gravitatoria ejercida por la Luna.",
+                    "El choque de los vientos alisios contra los acantilados."
+                ],
+                correctIndex: 0,
+                rationale: "Los procesos geológicos internos son impulsados por el calor interno del núcleo y del manto (movimiento de placas, volcanes, orógenos) (Página 8)."
+            },
+            {
+                question: "¿Qué agentes geológicos externos desencadenan los procesos de meteorización, erosión, transporte y sedimentación?",
+                options: [
+                    "El agua, el viento y los seres vivos (impulsados por la energía solar y la gravedad).",
+                    "El magma, las plumas térmicas y la masa del núcleo interno.",
+                    "Los rayos cósmicos y los meteoritos únicamente.",
+                    "Las placas litosféricas continentales en subducción."
+                ],
+                correctIndex: 0,
+                rationale: "Los agentes geológicos externos son el agua, el viento y los seres vivos, movidos por la energía solar y la gravedad (Página 8)."
+            },
+            {
+                question: "¿En qué consiste la meteorización física o mecánica de las rocas?",
+                options: [
+                    "La rotura de las rocas por congelación del agua (hielo) y variaciones bruscas de temperatura.",
+                    "La alteración de los minerales al reaccionar con el oxígeno o el dióxido de carbono.",
+                    "La fragmentación producida por las raíces de los árboles y las lombrices de tierra.",
+                    "El transporte en disolución de los fragmentos rocosos hacia el mar."
+                ],
+                correctIndex: 0,
+                rationale: "La meteorización física o mecánica desintegra la roca por hielo (gelifracción) y cambios bruscos de temperatura sin alterar su composición química (Página 9)."
+            },
+            {
+                question: "¿Qué diferencia existe entre meteorización y erosión según el texto?",
+                options: [
+                    "La meteorización destruye/in situ la roca, mientras que la erosión implica el desgaste y remoción de materiales por agentes en movimiento.",
+                    "La meteorización es provocada por el viento y la erosión solo por el hielo.",
+                    "La erosión ocurre en el núcleo y la meteorización en la exosfera.",
+                    "La meteorización deposita estratos y la erosión crea magma."
+                ],
+                correctIndex: 0,
+                rationale: "La meteorización es la destrucción in situ por la atmósfera/seres vivos, mientras la erosión es el desgaste y arranque de materiales (Página 9)."
+            },
+            {
+                question: "¿Cuáles son las formas de transporte de fragmentos rocosos sólidos o disueltos representadas en el documento?",
+                options: [
+                    "Disolución, suspensión, saltación, rodadura y arrastre.",
+                    "Convección, subducción, lixiviación y escorrentía.",
+                    "Gelifracción, carbonatación, oxidación y deyección.",
+                    "Evaporación, filtración, sublimación y licuación."
+                ],
+                correctIndex: 0,
+                rationale: "En el esquema del transporte fluvial/eólico (Página 9) se ilustran: disolución, suspensión, rodadura, saltación y arrastre."
+            },
+
+            // BLOCK 7: FORMAS ESPECÍFICAS DE MODELADO (42-50)
+            {
+                question: "¿Qué forma del relieve originada por aguas salvajes consiste en surcos e irregularidades en terrenos blandos (arcillas) con fuerte pendiente y sin vegetación?",
+                options: [
+                    "Cárcavas",
+                    "Meandros",
+                    "Chimeneas de hadas",
+                    "Morrenas"
+                ],
+                correctIndex: 0,
+                rationale: "Las cárcavas se forman cuando las aguas salvajes discurren sobre terrenos blandos como arcillas con pendiente y sin vegetación (Página 10)."
+            },
+            {
+                question: "¿Qué diferencia a un torrente de un río según el modelado fluvial?",
+                options: [
+                    "Los torrentes son cursos estacionales de caudal irregular y fuerte pendiente; los ríos son cursos permanentes de agua.",
+                    "Los torrentes fluyen siempre por valles en U y los ríos por cuevas subterráneas.",
+                    "Los ríos no tienen capacidad erosiva y los torrentes solo transportan arena fina.",
+                    "Los torrentes desembocan en estuarios y los ríos en la exósfera."
+                ],
+                correctIndex: 0,
+                rationale: "La página 10 define los torrentes como cursos estacionales de caudal irregular y fuerte pendiente, mientras que los ríos son permanentes."
+            },
+            {
+                question: "¿En qué curso de un río se forman los valles en 'V', las gargantas profundas, cascadas y rápidos?",
+                options: [
+                    "Curso alto (cerca del nacimiento).",
+                    "Curso medio (en terrenos llanos).",
+                    "Curso bajo (cerca del mar).",
+                    "En la desembocadura en delta."
+                ],
+                correctIndex: 0,
+                rationale: "En el curso alto, cerca del nacimiento, el río discurre por terrenos rocosos y escarpados formando valles en V, gargantas y cascadas (Página 10)."
+            },
+            {
+                question: "¿Qué formas características de erosión y sedimentación se producen en el curso medio de un río?",
+                options: [
+                    "Grandes curvas llamadas meandros, valles en forma de artesa, llanuras aluviales y terrazas fluviales.",
+                    "Deltas, estuarios y barreras costeras salinas.",
+                    "Chimeneas de hadas y lapiaces calcáreos.",
+                    "Circo glaciar y morrenas laterales."
+                ],
+                correctIndex: 0,
+                rationale: "En el curso medio, el cauce describe meandros, creando valles en artesa, llanuras aluviales y terrazas fluviales (Página 10)."
+            },
+            {
+                question: "¿Qué es el modelado kárstico y qué roca lo padece característicamente?",
+                options: [
+                    "Es la disolución de rocas calizas por agua cargada de dióxido de carbono (CO2).",
+                    "Es la congelación de agua dentro del granito de las altas cumbres.",
+                    "Es el impacto de olas cargadas de arena contra acantilados de basalto.",
+                    "Es la acumulación de dunas de cuarzo en desiertos de piedras."
+                ],
+                correctIndex: 0,
+                rationale: "El modelado kárstico es resultado de la meteorización química del agua con CO2 sobre terrenos calizos (Página 11)."
+            },
+            {
+                question: "En una cueva kárstica, ¿cómo se denominan los depósitos calcáreos que cuelgan del techo y los que se elevan desde el suelo?",
+                options: [
+                    "Estalactitas (del techo) y Estalagmitas (del suelo).",
+                    "Estalagmitas (del techo) y Estalactitas (del suelo).",
+                    "Simas (del techo) y Dolinas (del suelo).",
+                    "Lapiaces (del techo) y Surgencias (del suelo)."
+                ],
+                correctIndex: 0,
+                rationale: "Las estalactitas son depósitos de caliza que cuelgan del techo y las estalagmitas se sitúan verticalmente en el suelo (Página 11)."
+            },
+            {
+                question: "¿Qué es una morrena en el modelado glaciar?",
+                options: [
+                    "Un depósito de piedras y fragmentos rocosos transportados y acumulados en los márgenes de la lengua del glaciar.",
+                    "Una estría pulida producida en la superficie del granito por el hielo.",
+                    "Una cuenca semicircular donde se acumula la nieve en las cumbres.",
+                    "Un lago formado tras la desembocadura de un torrente kárstico."
+                ],
+                correctIndex: 0,
+                rationale: "Las morrenas son los depósitos de piedras en las laderas y frente del valle glaciar transportadas por el hielo (Página 11)."
+            },
+            {
+                question: "¿Cómo se llama la plataforma rocosa casi plana que queda en la base de un acantilado marino tras desplomarse por el oleaje?",
+                options: [
+                    "Plataforma de abrasión",
+                    "Tómbolo costero",
+                    "Albufera litoral",
+                    "Llanura aluvial"
+                ],
+                correctIndex: 0,
+                rationale: "Las olas erosionan la base de los acantilados provocando su desplome y formando plataformas de abrasión (Página 12)."
+            },
+            {
+                question: "¿Qué es un tómbolo en la morfología litoral?",
+                options: [
+                    "Un depósito de arena o cantos que enlaza un islote con la costa.",
+                    "Un arco marino cuyo techo se ha derrumbado por completo.",
+                    "Una laguna costera cerrada por una barrera de arena.",
+                    "Un saliente rocoso resistente en forma de cabo."
+                ],
+                correctIndex: 0,
+                rationale: "El tómbolo se define como el depósito de arena o cantos que enlaza un islote y la costa (Página 12)."
+            },
+            {
+                question: "¿Cómo se denominan respectivamente los tres tipos de desierto (rocoso, de piedra y de arena) descritos en la unidad?",
+                options: [
+                    "Hamada (rocoso), Reg (de piedra) y Erg (de arena).",
+                    "Erg (rocoso), Hamada (de piedra) y Reg (de arena).",
+                    "Uadí (rocoso), Loess (de piedra) y Erg (de arena).",
+                    "Reg (rocoso), Erg (de piedra) y Hamada (de arena)."
+                ],
+                correctIndex: 0,
+                rationale: "El desierto rocoso se denomina hamada, el de piedra reg, y el de arena erg (cuyo rasgo son las dunas) (Página 12)."
+            }
+        ];
+
+        // SESSION STATE VARIABLES
+        let studentProfile = { name: '', group: '', school: '' };
+        let activeSessionQuestions = [];
+        let userSelectedAnswers = new Array(50).fill(null);
+        let currentQuestionIndex = 0;
+        let timerSeconds = 0;
+        let timerInterval = null;
+
+        // Fisher-Yates Shuffle Algorithm
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // Initialize Session with Fully Randomized Questions and Options
+        function initNewSession() {
+            // Shuffle questions order
+            const shuffledQ = shuffleArray(masterQuestions);
+
+            // Shuffle options within each question
+            activeSessionQuestions = shuffledQ.map((item) => {
+                const originalOptions = item.options;
+                const correctText = originalOptions[item.correctIndex];
+
+                const shuffledOptions = shuffleArray(originalOptions);
+                const newCorrectIndex = shuffledOptions.indexOf(correctText);
+
+                return {
+                    question: item.question,
+                    options: shuffledOptions,
+                    correctIndex: newCorrectIndex,
+                    rationale: item.rationale
+                };
+            });
+
+            userSelectedAnswers = new Array(activeSessionQuestions.length).fill(null);
+            currentQuestionIndex = 0;
+            timerSeconds = 0;
+        }
+
+        // Timer Functions
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerSeconds = 0;
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                timerSeconds++;
+                updateTimerDisplay();
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(timerSeconds / 60);
+            const secs = timerSeconds % 60;
+            const formatted = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            document.getElementById('timer-display').textContent = formatted;
+        }
+
+        // Handle Form Registration
+        function handleStartQuiz(e) {
+            e.preventDefault();
+            const name = document.getElementById('input-name').value.trim();
+            const group = document.getElementById('input-group').value.trim();
+            const school = document.getElementById('input-school').value.trim() || 'Centro Educativo';
+
+            if (!name || !group) return;
+
+            studentProfile = { name, group, school };
+            document.getElementById('header-student-name').textContent = `${name} (${group})`;
+
+            initNewSession();
+            startTimer();
+
+            // Screen Switch
+            document.getElementById('screen-register').classList.add('hidden');
+            document.getElementById('screen-quiz').classList.remove('hidden');
+            document.getElementById('quiz-top-bar').classList.remove('hidden');
+
+            renderQuestionGrid();
+            renderQuestionContent();
+        }
+
+        // Render Question Navigation Palette (50 Buttons)
+        function renderQuestionGrid() {
+            const gridContainer = document.getElementById('question-grid');
+            gridContainer.innerHTML = '';
+
+            activeSessionQuestions.forEach((_, idx) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.id = `palette-btn-${idx}`;
+                btn.onclick = () => jumpToQuestion(idx);
+
+                const isAnswered = userSelectedAnswers[idx] !== null;
+                const isCurrent = currentQuestionIndex === idx;
+
+                let classes = "w-full aspect-square rounded-lg font-bold text-xs flex items-center justify-center transition-all ";
+                
+                if (isCurrent) {
+                    classes += "ring-2 ring-emerald-600 font-extrabold shadow-md ";
+                }
+
+                if (isAnswered) {
+                    classes += "bg-emerald-600 text-white hover:bg-emerald-700";
+                } else {
+                    classes += "bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-200";
+                }
+
+                btn.className = classes;
+                btn.textContent = idx + 1;
+                gridContainer.appendChild(btn);
+            });
+
+            // Update answered counter tag
+            const answeredCount = userSelectedAnswers.filter(a => a !== null).length;
+            document.getElementById('answered-count-tag').textContent = `${answeredCount}/50`;
+        }
+
+        // Render Current Question View
+        function renderQuestionContent() {
+            const q = activeSessionQuestions[currentQuestionIndex];
+            const isAnswered = userSelectedAnswers[currentQuestionIndex] !== null;
+
+            // Update Progress Header
+            document.getElementById('quiz-question-number').textContent = `Pregunta ${currentQuestionIndex + 1} de 50`;
+            
+            const statusBadge = document.getElementById('quiz-status-badge');
+            if (isAnswered) {
+                statusBadge.textContent = "Respondida";
+                statusBadge.className = "bg-emerald-100 text-emerald-800 font-semibold text-xs px-2.5 py-1 rounded-full";
+            } else {
+                statusBadge.textContent = "Pendiente";
+                statusBadge.className = "bg-amber-100 text-amber-800 font-semibold text-xs px-2.5 py-1 rounded-full";
+            }
+
+            const progressPercent = ((currentQuestionIndex + 1) / activeSessionQuestions.length) * 100;
+            document.getElementById('quiz-progress-bar').style.width = `${progressPercent}%`;
+
+            // Question Text
+            document.getElementById('question-text').textContent = `${currentQuestionIndex + 1}. ${q.question}`;
+
+            // Render Options (A, B, C, D)
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            const optionLetters = ['A', 'B', 'C', 'D'];
+            const selectedIdx = userSelectedAnswers[currentQuestionIndex];
+
+            q.options.forEach((optText, idx) => {
+                const isSelected = selectedIdx === idx;
+
+                const optBtn = document.createElement('button');
+                optBtn.type = 'button';
+                optBtn.onclick = () => selectOption(idx);
+                optBtn.className = `w-full text-left p-4 rounded-xl border transition-all flex items-start space-x-3.5 ${
+                    isSelected 
+                        ? 'border-emerald-600 bg-emerald-50/80 text-emerald-950 font-semibold shadow-sm ring-1 ring-emerald-500' 
+                        : 'border-slate-200 bg-slate-50/40 hover:bg-slate-100/80 text-slate-700'
+                }`;
+
+                // Letter Badge Circle
+                const letterBadge = document.createElement('div');
+                letterBadge.className = `w-7 h-7 rounded-lg font-bold text-xs flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                    isSelected ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-600 border border-slate-300'
+                }`;
+                letterBadge.textContent = optionLetters[idx];
+
+                // Text
+                const textSpan = document.createElement('span');
+                textSpan.className = 'text-sm sm:text-base leading-snug';
+                textSpan.textContent = optText;
+
+                optBtn.appendChild(letterBadge);
+                optBtn.appendChild(textSpan);
+                optionsContainer.appendChild(optBtn);
+            });
+
+            // Update Navigation Buttons
+            document.getElementById('btn-prev').disabled = (currentQuestionIndex === 0);
+
+            if (currentQuestionIndex === activeSessionQuestions.length - 1) {
+                document.getElementById('btn-next').classList.add('hidden');
+                document.getElementById('btn-submit').classList.remove('hidden');
+            } else {
+                document.getElementById('btn-next').classList.remove('hidden');
+                document.getElementById('btn-submit').classList.add('hidden');
+            }
+
+            renderQuestionGrid();
+        }
+
+        // Option Selection Handler
+        function selectOption(optionIndex) {
+            userSelectedAnswers[currentQuestionIndex] = optionIndex;
+            renderQuestionContent();
+        }
+
+        // Navigation Handlers
+        function navigateQuestion(delta) {
+            const target = currentQuestionIndex + delta;
+            if (target >= 0 && target < activeSessionQuestions.length) {
+                currentQuestionIndex = target;
+                renderQuestionContent();
+                window.scrollTo({ top: 100, behavior: 'smooth' });
+            }
+        }
+
+        function jumpToQuestion(index) {
+            currentQuestionIndex = index;
+            renderQuestionContent();
+            window.scrollTo({ top: 100, behavior: 'smooth' });
+        }
+
+        // Confirm Finish Trigger
+        function confirmSubmitQuiz() {
+            const unanswered = userSelectedAnswers.filter(a => a === null).length;
+            if (unanswered > 0) {
+                const proceed = confirm(`Atención: Tienes ${unanswered} pregunta(s) sin responder de las 50 totales. ¿Estás seguro de que deseas finalizar y entregar el cuestionario?`);
+                if (!proceed) return;
+            } else {
+                const proceed = confirm("¿Deseas finalizar y entregar tu cuestionario para recibir la calificación final?");
+                if (!proceed) return;
+            }
+
+            stopTimer();
+            calculateAndShowResults();
+        }
+
+        // Calculate Final Results and Display Breakdown
+        function calculateAndShowResults() {
+            let correctCount = 0;
+            activeSessionQuestions.forEach((q, idx) => {
+                if (userSelectedAnswers[idx] === q.correctIndex) {
+                    correctCount++;
+                }
+            });
+
+            const score10 = ((correctCount / 50) * 10).toFixed(1);
+            const percentage = Math.round((correctCount / 50) * 100);
+            
+            const mins = Math.floor(timerSeconds / 60);
+            const secs = timerSeconds % 60;
+            const timeFormatted = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')} min`;
+
+            // Hide Quiz Screen & Show Results Screen
+            document.getElementById('screen-quiz').classList.add('hidden');
+            document.getElementById('screen-results').classList.remove('hidden');
+
+            document.getElementById('result-student-info').textContent = `Alumno: ${studentProfile.name} | Grupo: ${studentProfile.group} | Centro: ${studentProfile.school} | Fecha: ${new Date().toLocaleDateString('es-ES')}`;
+            document.getElementById('result-score-10').textContent = score10;
+            document.getElementById('result-score-50').textContent = correctCount;
+            document.getElementById('result-percentage').textContent = `${percentage}%`;
+            document.getElementById('result-time').textContent = timeFormatted;
+
+            // Qualitative Feedback Styling
+            const headerBg = document.getElementById('results-header-bg');
+            const iconDiv = document.getElementById('results-icon');
+            const titleEl = document.getElementById('result-qualification-title');
+            const feedbackEl = document.getElementById('result-feedback-text');
+
+            if (percentage >= 90) {
+                headerBg.className = "p-8 text-white text-center bg-gradient-to-r from-emerald-700 to-teal-600";
+                iconDiv.innerHTML = '<i class="fa-solid fa-trophy text-amber-300"></i>';
+                titleEl.textContent = "¡Sobresaliente! Excelente Dominio";
+                feedbackEl.textContent = "Has demostrado un nivel de excelencia extraordinario en todos los contenidos sobre la Geosfera, Atmósfera, Hidrosfera, Suelo y Modelado del Relieve.";
+            } else if (percentage >= 70) {
+                headerBg.className = "p-8 text-white text-center bg-gradient-to-r from-blue-700 to-indigo-600";
+                iconDiv.innerHTML = '<i class="fa-solid fa-award text-amber-200"></i>';
+                titleEl.textContent = "¡Notable! Buen Rendimiento";
+                feedbackEl.textContent = "Has superado con éxito la evaluación mostrando una sólida comprensión de las interfases y procesos geológicos terrestres.";
+            } else if (percentage >= 50) {
+                headerBg.className = "p-8 text-white text-center bg-gradient-to-r from-amber-600 to-orange-500";
+                iconDiv.innerHTML = '<i class="fa-solid fa-medal"></i>';
+                titleEl.textContent = "Aprobado - Nivel Satisfactorio";
+                feedbackEl.textContent = "Has alcanzado los conocimientos mínimos exigidos. Te recomendamos revisar la corrección detallada para consolidar los conceptos fallados.";
+            } else {
+                headerBg.className = "p-8 text-white text-center bg-gradient-to-r from-slate-800 to-slate-700";
+                iconDiv.innerHTML = '<i class="fa-solid fa-book-open"></i>';
+                titleEl.textContent = "Suspenso - Requiere Repaso";
+                feedbackEl.textContent = "Te sugerimos volver a repasar detenidamente la unidad didáctica y volver a realizar una nueva sesión de práctica.";
+            }
+
+            // Populate 50 Questions Detailed Review List
+            const reviewContainer = document.getElementById('review-container');
+            reviewContainer.innerHTML = '';
+
+            const optionLetters = ['A', 'B', 'C', 'D'];
+
+            activeSessionQuestions.forEach((q, idx) => {
+                const uAns = userSelectedAnswers[idx];
+                const isCorrect = (uAns === q.correctIndex);
+                
+                const userAnsText = uAns !== null ? `${optionLetters[uAns]}) ${q.options[uAns]}` : "Sin responder";
+                const correctAnsText = `${optionLetters[q.correctIndex]}) ${q.options[q.correctIndex]}`;
+
+                const card = document.createElement('div');
+                card.className = `p-4 sm:p-5 rounded-xl border transition-all ${
+                    isCorrect ? 'bg-emerald-50/40 border-emerald-200' : 'bg-red-50/40 border-red-200'
+                }`;
+
+                card.innerHTML = `
+                    <div class="flex items-start justify-between gap-3 mb-2">
+                        <span class="font-bold text-slate-900 text-sm sm:text-base">${idx + 1}. ${q.question}</span>
+                        <span class="px-2.5 py-1 rounded-full text-xs font-bold flex items-center space-x-1 flex-shrink-0 ${
+                            isCorrect ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'
+                        }">
+                            <i class="fa-solid ${isCorrect ? 'fa-circle-check' : 'fa-circle-xmark'}"></i>
+                            <span>${isCorrect ? 'Correcta' : 'Incorrecta'}</span>
+                        </span>
+                    </div>
+                    
+                    <div class="text-xs sm:text-sm space-y-1 mb-3 pl-1">
+                        <p class="${isCorrect ? 'text-emerald-900 font-semibold' : 'text-red-900 font-semibold'}">
+                            <strong>Tu respuesta:</strong> ${userAnsText}
+                        </p>
+                        ${!isCorrect ? `<p class="text-emerald-900 font-semibold"><strong>Respuesta correcta:</strong> ${correctAnsText}</p>` : ''}
+                    </div>
+
+                    <div class="bg-white/80 p-3 rounded-lg border border-slate-200 text-xs text-slate-700 leading-relaxed">
+                        <strong class="text-emerald-700 flex items-center space-x-1 mb-0.5">
+                            <i class="fa-solid fa-lightbulb"></i>
+                            <span>Justificación Académica:</span>
+                        </strong>
+                        ${q.rationale}
+                    </div>
+                `;
+
+                reviewContainer.appendChild(card);
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Reset & Start New Session
+        function resetQuizSession() {
+            initNewSession();
+            document.getElementById('screen-results').classList.add('hidden');
+            document.getElementById('screen-quiz').classList.remove('hidden');
+            startTimer();
+            renderQuestionContent();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // GENERATE & DOWNLOAD PDF REPORT USING jsPDF
+        function downloadPDFReport() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({
+                orientation: 'p',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            let correctCount = 0;
+            activeSessionQuestions.forEach((q, idx) => {
+                if (userSelectedAnswers[idx] === q.correctIndex) correctCount++;
+            });
+
+            const score10 = ((correctCount / 50) * 10).toFixed(1);
+            const percentage = Math.round((correctCount / 50) * 100);
+            const mins = Math.floor(timerSeconds / 60);
+            const secs = timerSeconds % 60;
+            const timeFormatted = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')} min`;
+
+            const optionLetters = ['A', 'B', 'C', 'D'];
+
+            // Header Banner
+            doc.setFillColor(15, 23, 42); // Slate 900
+            doc.rect(0, 0, 210, 30, 'F');
+
+            doc.setFillColor(5, 150, 105); // Emerald 600 line accent
+            doc.rect(0, 30, 210, 2, 'F');
+
+            doc.setTextColor(255, 255, 255);
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(15);
+            doc.text("INFORME OFICIAL DE EVALUACIÓN ACADÉMICA", 14, 13);
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.text("Unidad: El Sistema Tierra, Geosfera, Atmósfera, Hidrosfera, Suelo y Relieve", 14, 21);
+
+            // Student Metadata Box
+            doc.setTextColor(30, 41, 59);
+            doc.setFontSize(9.5);
+            doc.setFont('helvetica', 'bold');
+            doc.text(`Estudiante: ${studentProfile.name}`, 14, 40);
+            doc.text(`Curso / Grupo: ${studentProfile.group}`, 14, 46);
+            doc.text(`Centro Educativo: ${studentProfile.school}`, 14, 52);
+            doc.text(`Fecha y Hora: ${new Date().toLocaleString('es-ES')}`, 14, 58);
+
+            // Score Summary Card Box
+            doc.setFillColor(241, 245, 249);
+            doc.rect(130, 36, 66, 25, 'F');
+            doc.setDrawColor(203, 213, 225);
+            doc.rect(130, 36, 66, 25, 'S');
+
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(100, 116, 139);
+            doc.text("CALIFICACIÓN FINAL", 134, 42);
+
+            doc.setFontSize(15);
+            doc.setTextColor(5, 150, 105);
+            doc.text(`${score10} / 10`, 134, 51);
+
+            doc.setFontSize(8.5);
+            doc.setTextColor(30, 41, 59);
+            doc.text(`Aciertos: ${correctCount}/50 (${percentage}%)`, 134, 57);
+            doc.text(`Tiempo: ${timeFormatted}`, 134, 61);
+
+            doc.setDrawColor(226, 232, 240);
+            doc.line(14, 66, 196, 66);
+
+            // Detailed Breakdown Section Title
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(15, 23, 42);
+            doc.text("Desglose y Corrección de las 50 Preguntas", 14, 73);
+
+            let yPos = 80;
+            const pageHeight = 280;
+
+            activeSessionQuestions.forEach((q, idx) => {
+                const uAns = userSelectedAnswers[idx];
+                const isCorrect = (uAns === q.correctIndex);
+                const userAnsText = uAns !== null ? `${optionLetters[uAns]}) ${q.options[uAns]}` : "Sin responder";
+                const correctAnsText = `${optionLetters[q.correctIndex]}) ${q.options[q.correctIndex]}`;
+
+                // Page break check
+                if (yPos > pageHeight - 35) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+
+                // Question Title
+                doc.setFontSize(9);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(30, 41, 59);
+                
+                const splitQuestion = doc.splitTextToSize(`${idx + 1}. ${q.question}`, 150);
+                doc.text(splitQuestion, 14, yPos);
+
+                // Badge Status
+                if (isCorrect) {
+                    doc.setFillColor(209, 250, 229);
+                    doc.setTextColor(6, 95, 70);
+                    doc.rect(168, yPos - 3, 28, 5, 'F');
+                    doc.setFontSize(7.5);
+                    doc.text("CORRECTA", 171, yPos + 0.5);
+                } else {
+                    doc.setFillColor(254, 226, 226);
+                    doc.setTextColor(153, 27, 27);
+                    doc.rect(168, yPos - 3, 28, 5, 'F');
+                    doc.setFontSize(7.5);
+                    doc.text("INCORRECTA", 170, yPos + 0.5);
+                }
+
+                yPos += (splitQuestion.length * 4);
+
+                // Answers Details
+                doc.setFontSize(8);
+                doc.setFont('helvetica', 'normal');
+
+                if (isCorrect) {
+                    doc.setTextColor(6, 95, 70);
+                    const splitUserAns = doc.splitTextToSize(`Respuesta: ${userAnsText}`, 178);
+                    doc.text(splitUserAns, 18, yPos);
+                    yPos += (splitUserAns.length * 3.6);
+                } else {
+                    doc.setTextColor(153, 27, 27);
+                    const splitUserAns = doc.splitTextToSize(`Tu respuesta: ${userAnsText}`, 178);
+                    doc.text(splitUserAns, 18, yPos);
+                    yPos += (splitUserAns.length * 3.6);
+
+                    doc.setTextColor(6, 95, 70);
+                    const splitCorrectAns = doc.splitTextToSize(`Respuesta correcta: ${correctAnsText}`, 178);
+                    doc.text(splitCorrectAns, 18, yPos);
+                    yPos += (splitCorrectAns.length * 3.6);
+                }
+
+                // Rationale
+                doc.setFontSize(7.5);
+                doc.setTextColor(71, 85, 105);
+                const splitRationale = doc.splitTextToSize(`Justificación: ${q.rationale}`, 178);
+                doc.text(splitRationale, 18, yPos);
+                yPos += (splitRationale.length * 3.4) + 3;
+
+                // Subtle line separator
+                doc.setDrawColor(241, 245, 249);
+                doc.line(14, yPos - 1.5, 196, yPos - 1.5);
+            });
+
+            // Save PDF
+            const cleanName = studentProfile.name.replace(/[^a-zA-Z0-9]/g, '_');
+            doc.save(`Informe_Evaluacion_Sistema_Tierra_${cleanName}.pdf`);
+        }
+    </script>
+</body>
+</html>
